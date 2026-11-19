@@ -1,0 +1,5 @@
+ROM.lnk
+node_modules/
+dist/
+*.gba
+*.sav
