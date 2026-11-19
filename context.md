@@ -1,14 +1,36 @@
-# Project context — Poké Lab v0.26
+# Project context — Poké Lab v0.31
 
 The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
 
 ## Current architecture
 
-- The root Vite entry renders the ROM Patcher. The local SQL catalog provides game and build labels and cover images through SQLite (sql.js). ROM bytes are held in memory.
+- The root Vite entry renders the ROM Patcher. The local SQL catalog provides game and build labels, cover images, menu paths, and per-game patch notes through SQLite (sql.js).
 - The `rom` query parameter follows the game selector and works with browser navigation. A change of game clears the selected file. The Misc view continues to use the URL fragment.
 - The SoulGold module validates the header, Thumb instructions, branches and menu tables. It checks output hashes for English v1.2.1 and TH Nonplae 1.2 and labels other structural matches as untested in an emulator.
+- The Emerald Crest v1.0.F patch matches an exact input hash, follows Start-menu action pointers and validates Thumb instructions. It adds CHEAT to the right menu page and calls the original icon cleanup before opening Debug. The output hash matches the ROM tested in mGBA.
+- Wally Quest v1.1 adds MAX CHEATS for the verified build. The patch derives both item IDs from the ROM and uses its original wallet and bag functions. It sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each, subject to bag capacity. mGBA verified the resulting balances and quantities and that using the action again did not add duplicates. The normal Start menu fits nine entries and omits EXIT when the original entries fill every slot.
 - Vite builds `misc.html` as a second entry. The Vue shell loads it when a user opens Misc and keeps it mounted when switching tabs. This preserves the existing tools and their state.
-- Serve `dist/` as a static site. GitHub Pages project subdirectories are supported through relative asset URLs. ROMs and saves are excluded from the repository.
+- ROMs, RAM dumps, and pasted debugger logs stay in browser memory. The patcher produces a separate download and never opens emulator saves. The app has no upload endpoint or persistent tool storage.
+- Misc requests Bootstrap and Tom Select from jsDelivr. Reference item icons are on by default and request sprites by item name from GitHub. Users can turn them off in the Item Database. Both HTML entries set `no-referrer`.
+- Serve `dist/` as a static site. GitHub Pages project subdirectories are supported through relative asset URLs. Git ignores ROMs, dumps, and common save formats.
+
+## Development and deployment
+
+- Use Node.js 20.19+ in the 20.x line or 22.12+. Run `npm ci` and `npm run dev` for local development.
+- Run `npm test` and `npm run build`, then `npm run preview` to check the static build. Pass supported local ROM paths to `node tests/regression.cjs` to verify output hashes.
+- Set GitHub Pages source to **GitHub Actions**. The workflow builds and publishes `dist/` when `main` receives a push or the workflow runs manually.
+
+## Visit counter
+
+`Ctrl+Shift+K` opens the visit total on Patcher and Misc. On browsers that reserve this shortcut, use `Ctrl+Shift+Alt+K`. The dialog is hidden during normal use. The API is public for the allowed site origin and counts approximate visits, including bots. It does not measure unique people.
+
+The app attempts one increment per tab session using a `sessionStorage` flag. Reloads and in-app navigation reuse that flag. If storage is blocked, the visit is skipped. The request has no body, cookies, or referrer. The host can still see ordinary network metadata. D1 stores one aggregate integer.
+
+1. Copy `counter/wrangler.example.toml` to `counter/wrangler.toml`. From `counter/`, run `npx wrangler login` and `npx wrangler d1 create poke-lab-visits`. Put the database ID into the config and set `SITE_ORIGIN` to the Pages origin or your custom domain, with no path or trailing slash.
+2. Run `npx wrangler d1 execute poke-lab-visits --remote --file=schema.sql`, then `npx wrangler deploy`.
+3. Set the GitHub repository Actions variable `VITE_VISIT_COUNTER_URL` to the deployed Worker URL ending in `/visits`, then run the Pages workflow. For local testing, set the same variable before starting Vite and use a Worker configured to allow the local site origin.
+
+With no endpoint configured, the website makes no counter requests. See [Cloudflare's D1 setup guide](https://developers.cloudflare.com/d1/get-started/).
 
 ## Remaining roadmap
 

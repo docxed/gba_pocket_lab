@@ -1,6 +1,9 @@
 import { createApp } from 'vue';
 import { createVuetify } from 'vuetify';
-import { VApp, VBtn, VIcon, VListItem, VSelect, VTab, VTabs } from 'vuetify/components';
+import {
+  VApp, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
+  VIcon, VListItem, VSelect, VSpacer, VTab, VTabs
+} from 'vuetify/components';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import {
@@ -12,7 +15,10 @@ import './style.css';
 import App from './App.vue';
 
 const vuetify = createVuetify({
-  components: { VApp, VBtn, VIcon, VListItem, VSelect, VTab, VTabs },
+  components: {
+    VApp, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
+    VIcon, VListItem, VSelect, VSpacer, VTab, VTabs
+  },
   icons: {
     defaultSet: 'mdi',
     sets: { mdi },

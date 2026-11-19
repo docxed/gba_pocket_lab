@@ -1,12 +1,16 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import { patchCrest } from './lib/crest.js';
+import { patchWallyQuest } from './lib/wally-quest.js';
+import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
+import { visitCounter } from './lib/visits.js';
 
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
 const games = ref([]);
 const selectedGame = ref(null);
-const patchers = { soulgold: patchSoulGold };
+const patchers = { soulgold: patchSoulGold, 'emerald-crest': patchCrest, 'wally-quest': patchWallyQuest };
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
 const fileInput = ref();
 const file = shallowRef(null);
@@ -18,11 +22,18 @@ const miscOpened = ref(page.value === 'misc');
 const miscFrame = ref();
 const miscHeight = ref(670);
 const miscUrl = import.meta.env.BASE_URL + 'misc.html';
+const counter = visitCounter(import.meta.env.VITE_VISIT_COUNTER_URL);
+const visitsOpen = ref(false);
+const visitsText = ref('');
+let visitRegistration;
+let miscDocument;
 
 onMounted(async () => {
   window.addEventListener('message', resizeMisc);
   window.addEventListener('hashchange', syncRoute);
   window.addEventListener('popstate', syncRoute);
+  window.addEventListener('keydown', showVisits);
+  visitRegistration = counter.record().catch(() => {});
   try {
     games.value = Object.values(await loadCatalog());
     syncRoute();
@@ -35,7 +46,34 @@ onBeforeUnmount(() => {
   window.removeEventListener('message', resizeMisc);
   window.removeEventListener('hashchange', syncRoute);
   window.removeEventListener('popstate', syncRoute);
+  window.removeEventListener('keydown', showVisits);
+  miscDocument?.removeEventListener('keydown', showVisits);
 });
+
+function bindMiscShortcut() {
+  miscDocument?.removeEventListener('keydown', showVisits);
+  miscDocument = miscFrame.value?.contentDocument;
+  miscDocument?.addEventListener('keydown', showVisits);
+}
+
+async function showVisits(event) {
+  if (!event.ctrlKey || !event.shiftKey || event.metaKey || event.code !== 'KeyK' || event.repeat) return;
+  event.preventDefault();
+  if (visitsOpen.value) return;
+  visitsOpen.value = true;
+  if (!counter.enabled) {
+    visitsText.value = 'The visit counter is not configured.';
+    return;
+  }
+  visitsText.value = 'Loading…';
+  try {
+    await visitRegistration;
+    const total = await counter.total();
+    visitsText.value = new Intl.NumberFormat().format(total);
+  } catch {
+    visitsText.value = 'The visit counter is unavailable.';
+  }
+}
 
 function syncRoute() {
   page.value = location.hash === '#misc' ? 'misc' : 'patch';
@@ -106,6 +144,7 @@ async function download() {
   const patcher = patchers[selectedGame.value];
   if (!file.value || !patcher || busy.value) return;
   const input = file.value;
+  const menuHint = game.value.menuHint;
   busy.value = true;
   failed.value = false;
   status.value = 'Checking the ROM and applying the patch...';
@@ -121,7 +160,7 @@ async function download() {
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
     status.value = verified
-      ? 'Patched. Open the new ROM and choose Start > Cheat.'
+      ? `Patched. Open the new ROM and choose ${menuHint}.`
       : 'Patched. This build passed structure checks and still needs emulator testing.';
   } catch (error) {
     if (file.value === input) {
@@ -153,8 +192,14 @@ async function download() {
 
     <main class="shell site-main">
       <section v-show="page === 'patch'" aria-labelledby="patch-heading">
-        <h1 id="patch-heading" class="page-heading">ROM Patcher</h1>
-        <p class="patch-intro">Add <strong>Cheat</strong> to the game's Start menu.</p>
+        <div class="patch-hero">
+          <img class="patch-banner" :src="patcherBanner" alt="" width="1024" height="338">
+          <div class="patch-hero-copy">
+            <h1 id="patch-heading" class="page-heading">ROM Patcher</h1>
+            <p v-if="game?.id === 'wally-quest'" class="patch-intro"><strong>Max Cheats</strong> fills your wallet and tops up Rare Candies and Master Balls.</p>
+            <p v-else class="patch-intro">Add <strong>Cheat</strong> to the game's Start menu.</p>
+          </div>
+        </div>
         <div class="patch-card">
           <div class="patch-fields">
             <div class="game-field">
@@ -194,6 +239,11 @@ async function download() {
             </div>
           </div>
 
+          <div v-if="game" class="patch-note">
+            <strong>{{ game.menuHint }}</strong>
+            <p>{{ game.patchNote }}</p>
+          </div>
+
           <div class="patch-actions flex flex-wrap items-center justify-between gap-4">
             <span class="privacy flex items-center gap-2"><v-icon icon="$labLock" size="17" /> Your ROM stays on this device.</span>
             <v-btn
@@ -207,13 +257,29 @@ async function download() {
 
       <section v-if="miscOpened" v-show="page === 'misc'" class="misc" aria-labelledby="misc-heading">
         <h1 id="misc-heading">Misc tools</h1>
-        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools"></iframe>
+        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools" @load="bindMiscShortcut"></iframe>
       </section>
     </main>
 
     <footer class="shell footer flex flex-wrap items-center justify-between gap-3">
       <span>Made by <strong>Psykedelik</strong></span>
-      <span>v0.26</span>
+      <details class="privacy-details">
+        <summary>Privacy</summary>
+        <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
+        <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
+        <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
+      </details>
+      <span>v0.31</span>
     </footer>
+    <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
+      <v-card>
+        <v-card-title id="visit-count-title">Total visits</v-card-title>
+        <v-card-text role="status">{{ visitsText }}</v-card-text>
+        <v-card-actions>
+          <v-spacer />
+          <v-btn @click="visitsOpen = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-app>
 </template>

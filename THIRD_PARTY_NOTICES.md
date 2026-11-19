@@ -10,6 +10,12 @@ Proposed MIT license covers original project code only, not ROMs, Pokémon asset
 
 - SoulGold title-screen thumbnail: https://pokemonsoulgold.com/images/game/title-screen-full.webp
 
+- Emerald Crest cover thumbnail by ThatSimpleDev: https://thatsimpledev.itch.io/emerald-crest
+
+- Wally Quest cover thumbnail supplied by the user from https://www.pokeharbor.com/wp-content/uploads/2022/10/Pokemon-Wally-Quest.png
+
+- Patcher banner: user-supplied Pokémon fan art featuring Lance.
+
 - Bootstrap 5.3.3 (CDN): https://github.com/twbs/bootstrap/blob/v5.3.3/LICENSE
 - Tom Select 2.3.1 (CDN): https://github.com/orchidjs/tom-select/blob/v2.3.1/LICENSE
 - PokeAPI reference sprites/data: https://pokeapi.co/ and https://github.com/PokeAPI/sprites ; Pokémon artwork and trademarks remain subject to their respective owners' rights. No blanket permission to redistribute is asserted.

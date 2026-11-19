@@ -27,6 +27,11 @@ async function main() {
   assert.doesNotMatch(src, /\b(?:findDex|findEncounters|scanLocations|renderDex)\b/);
   assert.doesNotMatch(html, /\bid="(?:dex\w*|mapdetail)"/);
 
+  assert.match(html, /<input type="checkbox" id="sprites" checked>/);
+  assert.match(html, /<meta name="referrer" content="no-referrer">/);
+  const patcherPage = fs.readFileSync(__dirname + '/../index.html', 'utf8');
+  assert.match(patcherPage, /<meta name="referrer" content="no-referrer">/);
+
   const elements = new Map(ids.map(id => [id, element()]));
   const panels = sections.map(([, id, attrs]) => Object.assign(elements.get(id), { id, hidden: attrs.includes('hidden') }));
   const buttons = tabs.map(([, attrs, id]) => ({
@@ -74,6 +79,12 @@ async function main() {
   emeraldHeaderOnly[0xbd] = (-0x19 - emeraldHeaderOnly.subarray(0xa0, 0xbd).reduce((sum, byte) => sum + byte, 0)) & 255;
   await assert.rejects(patch(emeraldHeaderOnly), /Unsupported SoulGold layout/);
 
+  const {patchCrest, crestPatch} = await import('../src/lib/crest.js');
+  await assert.rejects(patchCrest(new Uint8Array(192)), /supported, unpatched Emerald Crest/);
+
+  const {patchWallyQuest, wallyQuestPatch} = await import('../src/lib/wally-quest.js');
+  await assert.rejects(patchWallyQuest(new Uint8Array(32 * 1024 * 1024)), /unpatched Pok.*Wally Quest/);
+
   const fixtures = new Map([
     ['2cbd389822d80db1b7575b4e064e155bcfdbe17d000b324076d99fa6f7a8804b', '9cc2de4679a7e1c2e79ca2ff2541e0835d6b08fa4c9c3ba484f16f8c6364bce3'],
     ['01a6af0953a68732579360988edd3338e5b24d2e48248f3239e851adf2557b31', 'ace9e07650a857ff928dec1ebbaa23f7cfe9fa8cb387da655132e1e72c20e134']
@@ -82,6 +93,27 @@ async function main() {
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);
+    if (before === wallyQuestPatch.source) {
+      const {output, verified} = await patchWallyQuest(input);
+      assert.equal(verified, true);
+      assert.equal(hash(output), '06e73d932827d072ced16d00ce9e8621550d545794bd1332b2872aaee91ff4ea');
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      await assert.rejects(patchWallyQuest(output), /unpatched Pok.*Wally Quest/);
+      await assert.rejects(patch(input), /SoulGold/);
+      console.log('Verified Wally Quest patch for ' + file);
+      continue;
+    }
+    if (before === crestPatch.source) {
+      const {output, verified} = await patchCrest(input);
+      assert.equal(verified, true);
+      assert.equal(hash(output), '4e4e157dede42798988bbddcff6c81944583d926dcec95635b0ba5084c5f8ddd');
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      await assert.rejects(patchCrest(output), /unpatched Emerald Crest/);
+      await assert.rejects(patch(input), /SoulGold/);
+      console.log('Verified Emerald Crest patch for ' + file);
+      continue;
+    }
+    await assert.rejects(patchCrest(input), /unpatched Emerald Crest/);
     const {output, verified} = await patch(input);
     assert.equal(verified, true);
     assert.equal(hash(input), before, 'The source ROM must remain unchanged');

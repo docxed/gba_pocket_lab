@@ -3,3 +3,13 @@ node_modules/
 dist/
 *.gba
 *.sav
+*.bin
+*.dmp
+*.dump
+*.ram
+*.srm
+*.ss[0-9]
+*.sgm
+*.state*
+counter/wrangler.toml
+counter/.wrangler/
