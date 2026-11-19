@@ -6,6 +6,7 @@ import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
 import { visitCounter } from './lib/visits.js';
+import ItemRain from './ItemRain.vue';
 
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
 const games = ref([]);
@@ -175,6 +176,7 @@ async function download() {
 
 <template>
   <v-app class="lab-app">
+    <ItemRain />
     <header class="site-header">
       <div class="shell flex items-center justify-between gap-4">
         <a class="wordmark flex items-center gap-3" href="#patch" aria-label="Poke Lab home" @click.prevent="openPage('patch')">
@@ -269,7 +271,7 @@ async function download() {
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
         <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.31</span>
+      <span>v0.32</span>
     </footer>
     <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
       <v-card>
