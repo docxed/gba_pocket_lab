@@ -22,6 +22,46 @@ function element() {
 }
 
 async function main() {
+  const {applyTheme, savedTheme, saveTheme} = await import('../src/lib/theme.js');
+  const data = new Map();
+  const browser = {localStorage: {getItem: key => data.get(key), setItem: (key, value) => data.set(key, value)}};
+  assert.equal(savedTheme(browser), null);
+  saveTheme('dark', browser);
+  assert.equal(savedTheme(browser), 'dark');
+  saveTheme('light', browser);
+  assert.equal(savedTheme(browser), 'light');
+  const blocked = {get localStorage() { throw new Error('Storage disabled'); }};
+  assert.equal(savedTheme(blocked), null);
+  assert.doesNotThrow(() => saveTheme('dark', blocked));
+  const miscRoot = {dataset: {}};
+  applyTheme(miscRoot, 'dark');
+  assert.deepEqual(miscRoot.dataset, {theme: 'dark', bsTheme: 'dark'});
+  const {patcherLanguage, savePatcherLanguage, patcherCopy} = await import('../src/lib/patcher-language.js');
+  browser.navigator = {languages: ['th-TH', 'en-US']};
+  assert.equal(patcherLanguage(browser), 'th');
+  browser.navigator.languages = ['ja-JP', 'th-TH'];
+  assert.equal(patcherLanguage(browser), 'en');
+  savePatcherLanguage('th', browser);
+  assert.equal(patcherLanguage(browser), 'th');
+  savePatcherLanguage('en', browser);
+  assert.equal(patcherLanguage(browser), 'en');
+  assert.deepEqual(Object.keys(patcherCopy.th), Object.keys(patcherCopy.en));
+  assert.equal(patcherCopy.en.language, 'Page language');
+  const {default: initSqlJs} = await import('sql.js');
+  const catalog = new (await initSqlJs()).Database();
+  try {
+    catalog.run(fs.readFileSync(__dirname + '/../src/data/catalog.sql', 'utf8'));
+    const [notes] = catalog.exec('SELECT patch_note, patch_note_th FROM games ORDER BY sort_order');
+    assert.equal(notes.values.length, 6);
+    for (const [english, thai] of notes.values) {
+      assert.match(english, /[A-Za-z]/);
+      assert.match(thai, /\p{Script=Thai}/u);
+    }
+    assert.deepEqual(notes.values[0], ['Opens the Debug menu.', 'เปิดเมนู Debug']);
+  } finally {
+    catalog.close();
+  }
+
   assert.deepEqual(sections.map(([, id]) => id), ['money', 'shop', 'items']);
   assert.deepEqual(tabs.map(([, , id]) => id), ['money', 'shop', 'items']);
   assert.doesNotMatch(src, /\b(?:findDex|findEncounters|scanLocations|renderDex)\b/);
@@ -33,6 +73,8 @@ async function main() {
   assert.match(patcherPage, /<meta name="referrer" content="no-referrer">/);
 
   const patcherView = fs.readFileSync(__dirname + '/../src/App.vue', 'utf8');
+  assert.match(patcherView, /<\/ul>\s*<p v-if="game" id="rom-build-hint"[^>]*>{{ copy\.romHint }}<\/p>/);
+  assert.match(patcherView, /:aria-describedby="game \? 'rom-build-hint' : undefined"/);
   const deployWorkflow = fs.readFileSync(__dirname + '/../.github/workflows/deploy.yml', 'utf8');
   assert.doesNotMatch(patcherView + deployWorkflow, /VITE_(?:VISIT_COUNTER_URL|GOATCOUNTER_SITE)|showVisits/);
   const selector = patcherView.match(/<v-autocomplete\s+id="game-select"[^>]*>/)?.[0];

@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
 import { patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
@@ -8,6 +8,8 @@ import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
 import ItemRain from './ItemRain.vue';
+import { applyTheme, savedTheme, saveTheme } from './lib/theme.js';
+import { patcherCopy, patcherLanguage, savePatcherLanguage } from './lib/patcher-language.js';
 
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
 const games = ref([]);
@@ -27,13 +29,44 @@ const file = shallowRef(null);
 const drag = ref(false);
 const busy = ref(false);
 const status = ref('');
+const statusDetail = ref('');
 const failed = ref(false);
+const language = ref(patcherLanguage());
+const copy = computed(() => patcherCopy[language.value]);
 const miscOpened = ref(page.value === 'misc');
 const miscFrame = ref();
 const miscHeight = ref(670);
 const miscUrl = import.meta.env.BASE_URL + 'misc.html';
+const systemTheme = matchMedia('(prefers-color-scheme: dark)');
+const themePreference = ref(savedTheme());
+const systemDark = ref(systemTheme.matches);
+const theme = computed(() => themePreference.value ?? (systemDark.value ? 'dark' : 'light'));
+
+function syncMiscTheme() {
+  applyTheme(miscFrame.value?.contentDocument?.documentElement, theme.value);
+}
+
+watch(theme, value => {
+  applyTheme(document.documentElement, value);
+  syncMiscTheme();
+}, { immediate: true });
+
+function syncSystemTheme(event) {
+  systemDark.value = event.matches;
+}
+
+function toggleTheme() {
+  themePreference.value = theme.value === 'dark' ? 'light' : 'dark';
+  saveTheme(themePreference.value);
+}
+
+function chooseLanguage(next) {
+  language.value = next;
+  savePatcherLanguage(next);
+}
 
 onMounted(async () => {
+  systemTheme.addEventListener('change', syncSystemTheme);
   window.addEventListener('message', resizeMisc);
   window.addEventListener('hashchange', syncRoute);
   window.addEventListener('popstate', syncRoute);
@@ -42,10 +75,11 @@ onMounted(async () => {
     syncRoute();
   } catch {
     failed.value = true;
-    status.value = 'Could not load the game list. Reload the page to try again.';
+    status.value = 'catalogError';
   }
 });
 onBeforeUnmount(() => {
+  systemTheme.removeEventListener('change', syncSystemTheme);
   window.removeEventListener('message', resizeMisc);
   window.removeEventListener('hashchange', syncRoute);
   window.removeEventListener('popstate', syncRoute);
@@ -93,7 +127,7 @@ function selectFile(next) {
   if (busy.value || !next) return;
   failed.value = !/\.gba$/i.test(next.name) || next.size < 192 || next.size > soulGoldPatch.maxSize;
   file.value = failed.value ? null : next;
-  status.value = failed.value ? 'Choose a .gba ROM up to 32 MiB.' : '';
+  status.value = failed.value ? 'invalidFile' : '';
 }
 
 function inputChanged(event) {
@@ -106,7 +140,7 @@ function dropFile(event) {
   if (event.dataTransfer.files.length === 1) selectFile(event.dataTransfer.files[0]);
   else if (event.dataTransfer.files.length > 1 && !busy.value) {
     failed.value = true;
-    status.value = 'Choose one ROM at a time.';
+    status.value = 'multipleFiles';
   }
 }
 
@@ -124,7 +158,7 @@ async function download() {
   const menuHint = game.value.menuHint;
   busy.value = true;
   failed.value = false;
-  status.value = 'Checking the ROM and applying the patch...';
+  status.value = 'patching';
   try {
     const { output, verified } = await patcher(new Uint8Array(await input.arrayBuffer()));
     if (file.value !== input) return;
@@ -137,13 +171,13 @@ async function download() {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
-    status.value = verified
-      ? `Patched. Open the new ROM and choose ${menuHint}.`
-      : `Patched. Open the new ROM and choose ${menuHint}. This build passed structure checks and still needs emulator testing.`;
+    statusDetail.value = menuHint;
+    status.value = verified ? 'success' : 'untested';
   } catch (error) {
     if (file.value === input) {
       failed.value = true;
-      status.value = error.message;
+      statusDetail.value = error.message;
+      status.value = 'patchError';
     }
   } finally {
     busy.value = false;
@@ -152,7 +186,7 @@ async function download() {
 </script>
 
 <template>
-  <v-app class="lab-app">
+  <v-app class="lab-app" :theme="theme === 'dark' ? 'labDark' : 'lab'">
     <ItemRain />
     <header class="site-header">
       <div class="shell flex items-center justify-between gap-4">
@@ -160,12 +194,16 @@ async function download() {
           <span class="logo" aria-hidden="true"><v-icon icon="$labFlask" size="23" /></span>
           <span>Poké<span class="wordmark-lab"> Lab</span></span>
         </a>
-        <nav aria-label="Tools">
-          <v-tabs :model-value="page" class="site-tabs" hide-slider @update:model-value="openPage">
-            <v-tab value="patch" prepend-icon="$labGamepad">Patcher</v-tab>
-            <v-tab value="misc" prepend-icon="$labMisc">Misc</v-tab>
-          </v-tabs>
-        </nav>
+        <div class="header-tools">
+          <nav aria-label="Tools">
+            <v-tabs :model-value="page" class="site-tabs" hide-slider @update:model-value="openPage">
+              <v-tab value="patch" prepend-icon="$labGamepad">Patcher</v-tab>
+              <v-tab value="misc" prepend-icon="$labMisc">Misc</v-tab>
+            </v-tabs>
+          </nav>
+          <v-btn class="theme-toggle" variant="text" :icon="theme === 'dark' ? '$labSun' : '$labMoon'"
+            :aria-label="theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'" @click="toggleTheme" />
+        </div>
       </div>
     </header>
 
@@ -179,21 +217,32 @@ async function download() {
             <p v-else class="patch-intro">Add <strong>Cheat</strong> to the game's Start menu.</p>
           </div>
         </div>
-        <div class="patch-card">
+        <div class="patch-card" :lang="language">
           <div class="patch-fields">
             <div class="game-field">
-              <label for="game-select" class="field-label">Game</label>
+              <div class="game-field-heading">
+                <label for="game-select" class="field-label">{{ copy.game }}</label>
+                <div class="language-toggle" role="group" aria-labelledby="page-language-label">
+                  <span id="page-language-label">{{ copy.language }}</span>
+                  <button type="button" lang="en" aria-label="English" title="English" :aria-pressed="language === 'en'" @click="chooseLanguage('en')">
+                    <span class="language-flag language-flag-en" aria-hidden="true"></span>
+                  </button>
+                  <button type="button" lang="th" aria-label="ภาษาไทย" title="ภาษาไทย" :aria-pressed="language === 'th'" @click="chooseLanguage('th')">
+                    <span class="language-flag language-flag-th" aria-hidden="true"></span>
+                  </button>
+                </div>
+              </div>
               <v-autocomplete
                 id="game-select" :model-value="selectedGame" @update:model-value="chooseGame" :items="games" item-title="name" item-value="id"
                 v-model:search="gameSearch"
                 :filter-keys="['title', 'raw.builds']" ignore-accents auto-select-first
                 :disabled="!games.length || busy" variant="outlined" density="comfortable" hide-details
-                placeholder="Search games or versions" autocomplete="off"
+                :placeholder="copy.search" autocomplete="off"
                 menu-icon="$labChevron" :menu-props="{ contentClass: 'game-menu', offset: 6 }" class="game-select"
               >
                 <template #prepend-inner>
                   <span class="game-search-icon" aria-hidden="true"><v-icon icon="$labSearch" size="19" /></span>
-                  <span v-if="game && !gameSearch" class="game-search-hint" aria-hidden="true">Search games or versions</span>
+                  <span v-if="game && !gameSearch" class="game-search-hint" aria-hidden="true">{{ copy.search }}</span>
                 </template>
                 <template #selection="{ item }">
                   <span class="game-option"><img :src="item.cover" alt=""><span>{{ item.name }}</span></span>
@@ -207,49 +256,54 @@ async function download() {
                   </v-list-item>
                 </template>
                 <template #no-data>
-                  <div class="game-menu-empty">No matching games</div>
+                  <div class="game-menu-empty" :lang="language">{{ copy.noGames }}</div>
                 </template>
               </v-autocomplete>
-              <ul v-if="game" class="build-list flex flex-wrap gap-2" aria-label="Supported builds">
-                <li v-for="build in game.builds" :key="build">{{ build }}</li>
+              <ul v-if="game" class="build-list flex flex-wrap gap-2" :aria-label="copy.builds">
+                <li v-for="build in game.builds" :key="build" lang="en">{{ build }}</li>
               </ul>
+              <p v-if="game" id="rom-build-hint" class="rom-build-hint">{{ copy.romHint }}</p>
             </div>
 
             <div class="rom-field">
-              <div class="field-label">ROM file</div>
+              <div class="field-label">{{ copy.rom }}</div>
               <input ref="fileInput" type="file" accept=".gba" hidden @change="inputChanged">
               <div class="dropzone" :class="{ dragging: drag, selected: file }" @dragover.prevent="drag = true" @dragleave="drag = false" @drop.prevent="dropFile">
-                <button type="button" class="file-choose" :disabled="busy" @click="fileInput.click()">
+                <button type="button" class="file-choose" :disabled="busy" :aria-describedby="game ? 'rom-build-hint' : undefined" @click="fileInput.click()">
                   <span class="file-icon"><v-icon :icon="file ? '$labFile' : '$labUpload'" size="23" /></span>
                   <span class="file-copy">
-                    <strong>{{ file ? file.name : 'Choose or drop a ROM' }}</strong>
-                    <small>{{ file ? 'Click to replace' : '.gba file' }}</small>
+                    <strong>{{ file ? file.name : copy.choose }}</strong>
+                    <small>{{ file ? copy.replace : copy.fileType }}</small>
                   </span>
                 </button>
-                <v-btn v-if="file" icon="$labClose" aria-label="Remove ROM" variant="text" density="comfortable" :disabled="busy" @click="removeFile" />
+                <v-btn v-if="file" icon="$labClose" :aria-label="copy.remove" variant="text" density="comfortable" :disabled="busy" @click="removeFile" />
               </div>
             </div>
           </div>
 
           <div v-if="game" class="patch-note">
-            <strong>{{ game.menuHint }}</strong>
-            <p>{{ game.patchNote }}</p>
+            <strong lang="en">{{ game.menuHint }}</strong>
+            <p>{{ game.patchNotes[language] }}</p>
           </div>
 
           <div class="patch-actions flex flex-wrap items-center justify-between gap-4">
-            <span class="privacy flex items-center gap-2"><v-icon icon="$labLock" size="17" /> Your ROM stays on this device.</span>
+            <span class="privacy flex items-center gap-2"><v-icon icon="$labLock" size="17" /> {{ copy.privacy }}</span>
             <v-btn
               class="patch-button" color="primary" variant="flat" prepend-icon="$labDownload"
               :loading="busy" :disabled="!file || !patchers[selectedGame]" @click="download"
-            >Patch &amp; download</v-btn>
+            >{{ copy.patch }}</v-btn>
           </div>
-          <p v-if="status" class="feedback" :class="{ error: failed }" :role="failed ? 'alert' : 'status'">{{ status }}</p>
+          <p v-if="status" class="feedback" :class="{ error: failed }" :role="failed ? 'alert' : 'status'">
+            <template v-if="status === 'success' || status === 'untested'">{{ copy.success }} <span lang="en">{{ statusDetail }}</span>.<template v-if="status === 'untested'"> {{ copy.untested }}</template></template>
+            <template v-else-if="status === 'patchError'"><span v-if="language === 'th'">{{ copy.patchError }} </span><span lang="en">{{ statusDetail }}</span></template>
+            <template v-else>{{ copy[status] }}</template>
+          </p>
         </div>
       </section>
 
       <section v-if="miscOpened" v-show="page === 'misc'" class="misc" aria-labelledby="misc-heading">
         <h1 id="misc-heading">Misc tools</h1>
-        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools"></iframe>
+        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools" @load="syncMiscTheme"></iframe>
       </section>
     </main>
 
@@ -260,7 +314,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.37</span>
+      <span>v0.40</span>
     </footer>
   </v-app>
 </template>

@@ -4,6 +4,7 @@ CREATE TABLE games (
   cover TEXT NOT NULL,
   menu_hint TEXT NOT NULL,
   patch_note TEXT NOT NULL,
+  patch_note_th TEXT NOT NULL,
   sort_order INTEGER NOT NULL
 );
 
@@ -15,12 +16,12 @@ CREATE TABLE builds (
 );
 
 INSERT INTO games VALUES
-  ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the existing debug menu and keeps Docs available.', 1),
-  ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the existing debug menu and keeps Docs available.', 2),
-  ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Adds CHEAT to the right page of the Start menu and opens the existing debug menu.', 3),
-  ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room.', 4),
-  ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Select Cheat on the right of the Start menu to open the existing debug menu.', 5),
-  ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room.', 6);
+  ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 1),
+  ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 2),
+  ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Press Right in Start to find CHEAT.', 'กดขวาในเมนู Start เพื่อไปที่ CHEAT', 3),
+  ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 4),
+  ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Cheat is the rightmost icon in Start.', 'Cheat คือไอคอนขวาสุดของเมนู Start', 5),
+  ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6);
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),
