@@ -2,6 +2,9 @@ const fs = require('node:fs');
 const vm = require('node:vm');
 const assert = require('node:assert/strict');
 const {createHash, webcrypto} = require('node:crypto');
+const {execFileSync} = require('node:child_process');
+const {tmpdir} = require('node:os');
+const {join} = require('node:path');
 
 const html = fs.readFileSync(__dirname + '/../misc.html', 'utf8');
 const src = html.split('<script>').pop().split('</script>')[0];
@@ -22,6 +25,38 @@ function element() {
 }
 
 async function main() {
+  const fixtureDir = fs.mkdtempSync(join(tmpdir(), 'poke-lab-inspect-'));
+  const fixture = join(fixtureDir, 'Test ROM.gba');
+  const rom = Buffer.alloc(512);
+  rom.write('TEST', 0xac);
+  rom[0xb2] = 0x96;
+  rom[0xbd] = (-0x19 - rom.subarray(0xa0, 0xbd).reduce((sum, byte) => sum + byte, 0)) & 255;
+  rom.set(Buffer.from('bed9d6e9dbff', 'hex'), 0x120);
+  rom.writeUInt32LE(0x08000120, 0x140);
+  rom.writeUInt32LE(0x08000161, 0x144);
+  rom.writeUInt16LE(0xb500, 0x160);
+  rom.writeUInt16LE(0x4800, 0x162);
+  rom.writeUInt32LE(0x08000120, 0x164);
+  try {
+    fs.writeFileSync(fixture, rom);
+    const inspect = (...args) => JSON.parse(execFileSync(process.execPath, [
+      join(__dirname, '../tools/inspect-rom.mjs'), fixture, ...args
+    ], {encoding: 'utf8'}));
+    const report = inspect();
+    assert.equal(report.header.checksumValid, true);
+    assert.equal(report.sha256, createHash('sha256').update(rom).digest('hex'));
+    assert.equal(report.knownInput, null);
+    assert.ok(report.menuCandidates.some(match => match.label === 'Debug' &&
+      match.references.some(ref => ref.address === '0x08000140' && ref.after === '0x08000160')));
+    const {thumb} = inspect('--at', '0x08000160');
+    assert.equal(thumb[0].bytes, '00b5');
+    assert.equal(thumb[1].literal, '0x08000120');
+    assert.deepEqual(fs.readFileSync(fixture), rom);
+  } finally {
+    if (fs.existsSync(fixture)) fs.unlinkSync(fixture);
+    fs.rmdirSync(fixtureDir);
+  }
+
   const {readGbaRom} = await import('../src/lib/rom-file.js');
   const mockRom = Uint8Array.of(1, 2, 3);
   assert.deepEqual(await readGbaRom(new Blob([mockRom]), mockRom.length), mockRom);
@@ -68,7 +103,7 @@ async function main() {
   try {
     catalog.run(fs.readFileSync(__dirname + '/../src/data/catalog.sql', 'utf8'));
     const [notes] = catalog.exec('SELECT patch_note, patch_note_th FROM games ORDER BY sort_order');
-    assert.equal(notes.values.length, 6);
+    assert.equal(notes.values.length, 7);
     for (const [english, thai] of notes.values) {
       assert.match(english, /[A-Za-z]/);
       assert.match(thai, /\p{Script=Thai}/u);
@@ -190,6 +225,8 @@ async function main() {
   const {patchThetaEmerald, thetaEmeraldPatch} = await import('../src/lib/theta-emerald.js');
   await assert.rejects(patchUnbound(new Uint8Array(192)), /Choose Pok.*Unbound/);
   await assert.rejects(patchThetaEmerald(emeraldHeaderOnly), /unpatched Pok.*Theta Emerald/);
+  const {patchG3e, g3ePatch} = await import('../src/lib/g3e.js');
+  await assert.rejects(patchG3e(new Uint8Array(192)), /unpatched Generation 3 Evolved/);
   const unsupportedEmerald = new Uint8Array(32 * 1024 * 1024);
   unsupportedEmerald.set(emeraldHeaderOnly);
   await assert.rejects(patchThetaEmerald(unsupportedEmerald), /unpatched Pok.*Theta Emerald/);
@@ -215,6 +252,20 @@ async function main() {
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);
+    if (before === g3ePatch.source) {
+      const {output, verified} = await patchG3e(input);
+      assert.equal(verified, true);
+      assert.equal(hash(output), '30c622e5170bbdc196270be0a20083a2dfc5915f29828b9302da0e2680a453df');
+      const patched = new DataView(output.buffer, output.byteOffset, output.byteLength);
+      const epilogue = 0x21b0d4 + 24;
+      assert.deepEqual([0, 2, 4, 6].map(offset => patched.getUint16(epilogue + offset, true)),
+        [0x46c0, 0x2001, 0xbc02, 0x4708], 'Debug opener returns through the original Start epilogue');
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      assert.equal(input.length, g3ePatch.sourceSize);
+      await assert.rejects(patchG3e(output), /unpatched Generation 3 Evolved/);
+      console.log('Applied the Generation 3 Evolved Start > Cheat patch for ' + file);
+      continue;
+    }
     if (before === thetaEmeraldPatch.source) {
       const {output, verified} = await patchThetaEmerald(input);
       assert.equal(verified, true);

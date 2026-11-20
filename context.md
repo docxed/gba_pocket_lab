@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.42
+# Project context — Poké Lab v0.43
 
 The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Noto Sans Thai Looped as the first choice for UI text, with system fallbacks for missing glyphs. Project communication uses Thai, and source documentation is in English.
 
@@ -17,6 +17,7 @@ The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Not
 - The Emerald Crest v1.0.F patch matches an exact input hash, follows Start-menu action pointers and validates Thumb instructions. It adds CHEAT to the right menu page and calls the original icon cleanup before opening Debug. The output hash matches the ROM tested in mGBA.
 - The Pokémon Unbound patch accepts exact hashes for English v2.1.1.1 and TH Nonplae 2.0 and the earlier R-button outputs. It appends Cheat after the stock Start-menu sort when Game Settings is available and there is room. The new callback closes the Start UI and launches the native debug script without fading the field. The optional R-button shortcut is still available. The mGBA Libretro core (0.11-212-7a12d6d) opened Cheat and reopened Start in both languages. Max Coinage increased the wallet in the English build.
 - Theta Emerald: The Last Dance (Completo) adds Cheat to the normal Start menu for the verified input hash. It locates the wallet and bag routines and derives item IDs from the ROM records. The menu reserves a slot for Cheat when the original eight slots are full. A fresh game in the mGBA Libretro core (0.11-212-7a12d6d) showed 9,999,999 on the Trainer Card and 99 Rare Candies and 99 Master Balls in the Bag. A second use kept both item quantities at 99.
+- Generation 3 Evolved v1.0.26 uses Start > Cheat to open the game's Debug menu. The patch matches the exact 32 MiB FireRed input, adds action 12 after the player card on the normal field path, and calls the native Debug opener after the original DEBUG window cleanup. The output SHA-256 is `30c622e5170bbdc196270be0a20083a2dfc5915f29828b9302da0e2680a453df`. The updated callback replaces the leftover Thumb BL halfword before the return sequence with a NOP. The final output has static fixture coverage, and the user confirmed that Start > Cheat opens successfully in an emulator.
 - Wally Quest v1.1 adds MAX CHEATS for the verified build. The patch derives both item IDs from the ROM and uses its original wallet and bag functions. It sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each, subject to bag capacity. mGBA verified the resulting balances and quantities and that using the action again did not add duplicates. The normal Start menu fits nine entries and omits EXIT when the original entries fill every slot.
 - Vite builds `misc.html` as a second entry. The Vue shell loads it when a user opens Misc and keeps it mounted when switching tabs. This preserves the existing tools and their state.
 - ROMs, RAM dumps, and pasted debugger logs stay in browser memory. The patcher produces a separate download and never opens emulator saves. The app has no upload endpoint or persistent tool storage.
@@ -24,6 +25,8 @@ The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Not
 - Serve `dist/` as a static site. GitHub Pages project subdirectories are supported through relative asset URLs. Git ignores ROMs, dumps, and common save formats.
 
 ## Development and deployment
+
+Start local ROM investigations with `node tools/inspect-rom.mjs "<local ROM path>"`. The read-only CLI reports build identity and a bounded selection of menu, money, and item candidates as JSON. It hashes the whole file and scans at most the first 32 MiB. Use `--at 0x08XXXXXX` for up to 12 partially decoded Thumb instructions at an aligned ROM address. Menu reference fields `before` and `after` indicate candidate Thumb targets from the adjacent words. Follow the validation and implementation steps in [AGENTS.md](AGENTS.md).
 
 - Use Node.js 20.19+ in the 20.x line or 22.12+. Run `npm ci` and `npm run dev` for local development.
 - Run `npm test` and `npm run build`, then `npm run preview` to check the static build. Pass supported local ROM paths to `node tests/regression.cjs` to verify output hashes.

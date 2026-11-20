@@ -21,7 +21,8 @@ INSERT INTO games VALUES
   ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Press Right in Start to find CHEAT.', 'กดขวาในเมนู Start เพื่อไปที่ CHEAT', 3),
   ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 4),
   ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Cheat is the rightmost icon in Start.', 'Cheat คือไอคอนขวาสุดของเมนู Start', 5),
-  ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6);
+  ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6),
+  ('generation-3-evolved', 'Pokémon Generation 3 Evolved', 'covers/generation-3-evolved.png', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 7);
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),
@@ -30,4 +31,5 @@ INSERT INTO builds VALUES
   ('wally-quest', 1, 'v1.1'),
   ('unbound', 1, 'English v2.1.1.1'),
   ('unbound', 2, 'TH Nonplae 2.0'),
-  ('theta-emerald', 1, 'The Last Dance (Completo)');
+  ('theta-emerald', 1, 'The Last Dance (Completo)'),
+  ('generation-3-evolved', 1, 'v1.0.26');

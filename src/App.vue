@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vu
 import { crestPatch, patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
+import { patchG3e } from './lib/g3e.js';
 import { patchThetaEmerald } from './lib/theta-emerald.js';
 import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
@@ -22,7 +23,8 @@ const patchers = {
   'emerald-crest': patchCrest,
   'wally-quest': patchWallyQuest,
   unbound: patchUnbound,
-  'theta-emerald': patchThetaEmerald
+  'theta-emerald': patchThetaEmerald,
+  'generation-3-evolved': patchG3e
 };
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
 const fileInput = ref();
@@ -316,7 +318,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.42</span>
+      <span>v0.43</span>
     </footer>
   </v-app>
 </template>
