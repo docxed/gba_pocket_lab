@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.36
+# Project context — Poké Lab v0.37
 
 The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
 
@@ -24,18 +24,6 @@ The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The int
 - Use Node.js 20.19+ in the 20.x line or 22.12+. Run `npm ci` and `npm run dev` for local development.
 - Run `npm test` and `npm run build`, then `npm run preview` to check the static build. Pass supported local ROM paths to `node tests/regression.cjs` to verify output hashes.
 - Set GitHub Pages source to **GitHub Actions**. The workflow builds and publishes `dist/` when `main` receives a push or the workflow runs manually.
-
-## Visit counter
-
-`Ctrl+Shift+K` opens the visit total on Patcher and Misc. On browsers that reserve this shortcut, use `Ctrl+Shift+Alt+K`. The dialog is hidden during normal use. The API is public for the allowed site origin and counts approximate visits, including bots. It does not measure unique people.
-
-The app attempts one increment per tab session using a `sessionStorage` flag. Reloads and in-app navigation reuse that flag. If storage is blocked, the visit is skipped. The request has no body, cookies, or referrer. The host can still see ordinary network metadata. D1 stores one aggregate integer.
-
-1. Copy `counter/wrangler.example.toml` to `counter/wrangler.toml`. From `counter/`, run `npx wrangler login` and `npx wrangler d1 create poke-lab-visits`. Put the database ID into the config and set `SITE_ORIGIN` to the Pages origin or your custom domain, with no path or trailing slash.
-2. Run `npx wrangler d1 execute poke-lab-visits --remote --file=schema.sql`, then `npx wrangler deploy`.
-3. Set the GitHub repository Actions variable `VITE_VISIT_COUNTER_URL` to the deployed Worker URL ending in `/visits`, then run the Pages workflow. For local testing, set the same variable before starting Vite and use a Worker configured to allow the local site origin.
-
-With no endpoint configured, the website makes no counter requests. See [Cloudflare's D1 setup guide](https://developers.cloudflare.com/d1/get-started/).
 
 ## Radical Red 4.1 investigation
 

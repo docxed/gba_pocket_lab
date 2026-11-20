@@ -12,5 +12,3 @@ dist/
 *.ss[0-9]
 *.sgm
 *.state*
-counter/wrangler.toml
-counter/.wrangler/

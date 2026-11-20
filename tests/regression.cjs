@@ -33,6 +33,8 @@ async function main() {
   assert.match(patcherPage, /<meta name="referrer" content="no-referrer">/);
 
   const patcherView = fs.readFileSync(__dirname + '/../src/App.vue', 'utf8');
+  const deployWorkflow = fs.readFileSync(__dirname + '/../.github/workflows/deploy.yml', 'utf8');
+  assert.doesNotMatch(patcherView + deployWorkflow, /VITE_(?:VISIT_COUNTER_URL|GOATCOUNTER_SITE)|showVisits/);
   const selector = patcherView.match(/<v-autocomplete\s+id="game-select"[^>]*>/)?.[0];
   assert.ok(selector, 'The game selector supports text input');
   const filterKeys = selector.match(/:filter-keys="([^"]+)"/)?.[1].match(/[\w.]+/g);

@@ -1,4 +1,4 @@
-# Poké Lab v0.36
+# Poké Lab v0.37
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 

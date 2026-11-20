@@ -1,8 +1,8 @@
 import { createApp } from 'vue';
 import { createVuetify } from 'vuetify';
 import {
-  VApp, VAutocomplete, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
-  VIcon, VListItem, VSpacer, VTab, VTabs
+  VApp, VAutocomplete, VBtn,
+  VIcon, VListItem, VTab, VTabs
 } from 'vuetify/components';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
@@ -16,8 +16,8 @@ import App from './App.vue';
 
 const vuetify = createVuetify({
   components: {
-    VApp, VAutocomplete, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
-    VIcon, VListItem, VSpacer, VTab, VTabs
+    VApp, VAutocomplete, VBtn,
+    VIcon, VListItem, VTab, VTabs
   },
   icons: {
     defaultSet: 'mdi',

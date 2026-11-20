@@ -7,7 +7,6 @@ import { patchThetaEmerald } from './lib/theta-emerald.js';
 import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
-import { visitCounter } from './lib/visits.js';
 import ItemRain from './ItemRain.vue';
 
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
@@ -33,18 +32,11 @@ const miscOpened = ref(page.value === 'misc');
 const miscFrame = ref();
 const miscHeight = ref(670);
 const miscUrl = import.meta.env.BASE_URL + 'misc.html';
-const counter = visitCounter(import.meta.env.VITE_VISIT_COUNTER_URL);
-const visitsOpen = ref(false);
-const visitsText = ref('');
-let visitRegistration;
-let miscDocument;
 
 onMounted(async () => {
   window.addEventListener('message', resizeMisc);
   window.addEventListener('hashchange', syncRoute);
   window.addEventListener('popstate', syncRoute);
-  window.addEventListener('keydown', showVisits);
-  visitRegistration = counter.record().catch(() => {});
   try {
     games.value = Object.values(await loadCatalog());
     syncRoute();
@@ -57,34 +49,7 @@ onBeforeUnmount(() => {
   window.removeEventListener('message', resizeMisc);
   window.removeEventListener('hashchange', syncRoute);
   window.removeEventListener('popstate', syncRoute);
-  window.removeEventListener('keydown', showVisits);
-  miscDocument?.removeEventListener('keydown', showVisits);
 });
-
-function bindMiscShortcut() {
-  miscDocument?.removeEventListener('keydown', showVisits);
-  miscDocument = miscFrame.value?.contentDocument;
-  miscDocument?.addEventListener('keydown', showVisits);
-}
-
-async function showVisits(event) {
-  if (!event.ctrlKey || !event.shiftKey || event.metaKey || event.code !== 'KeyK' || event.repeat) return;
-  event.preventDefault();
-  if (visitsOpen.value) return;
-  visitsOpen.value = true;
-  if (!counter.enabled) {
-    visitsText.value = 'The visit counter is not configured.';
-    return;
-  }
-  visitsText.value = 'Loading…';
-  try {
-    await visitRegistration;
-    const total = await counter.total();
-    visitsText.value = new Intl.NumberFormat().format(total);
-  } catch {
-    visitsText.value = 'The visit counter is unavailable.';
-  }
-}
 
 function syncRoute() {
   page.value = location.hash === '#misc' ? 'misc' : 'patch';
@@ -284,7 +249,7 @@ async function download() {
 
       <section v-if="miscOpened" v-show="page === 'misc'" class="misc" aria-labelledby="misc-heading">
         <h1 id="misc-heading">Misc tools</h1>
-        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools" @load="bindMiscShortcut"></iframe>
+        <iframe ref="miscFrame" :src="miscUrl" :style="{ height: miscHeight + 'px' }" title="Money, shop, and item tools"></iframe>
       </section>
     </main>
 
@@ -294,19 +259,8 @@ async function download() {
         <summary>Privacy</summary>
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
-        <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.36</span>
+      <span>v0.37</span>
     </footer>
-    <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
-      <v-card>
-        <v-card-title id="visit-count-title">Total visits</v-card-title>
-        <v-card-text role="status">{{ visitsText }}</v-card-text>
-        <v-card-actions>
-          <v-spacer />
-          <v-btn @click="visitsOpen = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-app>
 </template>
