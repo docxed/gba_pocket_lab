@@ -78,6 +78,18 @@ async function main() {
   emeraldHeaderOnly[0xb2] = 0x96;
   emeraldHeaderOnly[0xbd] = (-0x19 - emeraldHeaderOnly.subarray(0xa0, 0xbd).reduce((sum, byte) => sum + byte, 0)) & 255;
   await assert.rejects(patch(emeraldHeaderOnly), /Unsupported SoulGold layout/);
+  const megaGame = 'soulgold-mega-xtream';
+  await assert.rejects(patch(emeraldHeaderOnly, megaGame), /Unsupported SoulGold layout/);
+
+  // A shared Emerald header and renderer signature cannot authorize an out-of-bounds table.
+  const invalidTable = new Uint8Array(1024);
+  invalidTable.set(emeraldHeaderOnly);
+  const rendererOffset = 192;
+  const renderer = Buffer.from(soulGoldPatch.renderer, 'hex');
+  invalidTable.set(renderer, rendererOffset);
+  const literalOffset = rendererOffset + 4 + renderer[0] * 4;
+  new DataView(invalidTable.buffer).setUint32(literalOffset, 0x080003f0, true);
+  await assert.rejects(patch(invalidTable, megaGame), /Unsupported SoulGold layout/);
 
   const {patchCrest, crestPatch} = await import('../src/lib/crest.js');
   await assert.rejects(patchCrest(new Uint8Array(192)), /supported, unpatched Emerald Crest/);
@@ -86,8 +98,9 @@ async function main() {
   await assert.rejects(patchWallyQuest(new Uint8Array(32 * 1024 * 1024)), /unpatched Pok.*Wally Quest/);
 
   const fixtures = new Map([
-    ['2cbd389822d80db1b7575b4e064e155bcfdbe17d000b324076d99fa6f7a8804b', '9cc2de4679a7e1c2e79ca2ff2541e0835d6b08fa4c9c3ba484f16f8c6364bce3'],
-    ['01a6af0953a68732579360988edd3338e5b24d2e48248f3239e851adf2557b31', 'ace9e07650a857ff928dec1ebbaa23f7cfe9fa8cb387da655132e1e72c20e134']
+    ['2cbd389822d80db1b7575b4e064e155bcfdbe17d000b324076d99fa6f7a8804b', { target: '9cc2de4679a7e1c2e79ca2ff2541e0835d6b08fa4c9c3ba484f16f8c6364bce3' }],
+    ['01a6af0953a68732579360988edd3338e5b24d2e48248f3239e851adf2557b31', { target: 'ace9e07650a857ff928dec1ebbaa23f7cfe9fa8cb387da655132e1e72c20e134' }],
+    ['338f3bb39f3b315aaa6c3e358c0812c1a4e1e0f70e6d9e10f7ef857e9f5dde2f', { game: megaGame, target: '0033c4412a6926ac3b2a08b134102963af208e4a715ebabede707fbdadf4747d' }]
   ]);
   for (const file of process.argv.slice(2)) {
     const input = Uint8Array.from(fs.readFileSync(file));
@@ -114,15 +127,19 @@ async function main() {
       continue;
     }
     await assert.rejects(patchCrest(input), /unpatched Emerald Crest/);
-    const {output, verified} = await patch(input);
+    const fixture = fixtures.get(before);
+    assert.ok(fixture, 'Expected a known SoulGold fixture');
+    const {game, target} = fixture;
+    await assert.rejects(patch(input, game === megaGame ? 'soulgold' : megaGame), /SoulGold/);
+    const {output, verified} = await patch(input, game);
     assert.equal(verified, true);
     assert.equal(hash(input), before, 'The source ROM must remain unchanged');
-    assert.equal(hash(output), fixtures.get(before));
-    await assert.rejects(patch(output), /already patched/);
+    assert.equal(hash(output), target);
+    await assert.rejects(patch(output, game), /already patched/);
     const variant = input.slice();
     variant[0xbc] = (variant[0xbc] + 1) & 255;
     variant[0xbd] = (variant[0xbd] - 1) & 255;
-    const alternate = await patch(variant);
+    const alternate = await patch(variant, game);
     assert.equal(alternate.verified, false, 'A changed build must not claim emulator verification');
     const normalized = alternate.output;
     normalized.set(input.subarray(0xbc, 0xbe), 0xbc);
@@ -132,7 +149,7 @@ async function main() {
     const callback = Buffer.from(variant.buffer).indexOf(originalCallback);
     assert.ok(callback > 0);
     variant[callback] ^= 1;
-    await assert.rejects(patch(variant), /Unsupported SoulGold layout/, 'Reject a changed callback');
+    await assert.rejects(patch(variant, game), /Unsupported SoulGold layout/, 'Reject a changed callback');
     console.log('Verified SoulGold patch for ' + file);
   }
   console.log('Navigation, ROM loading and patch regression tests passed');

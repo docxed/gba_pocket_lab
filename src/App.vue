@@ -11,7 +11,12 @@ import ItemRain from './ItemRain.vue';
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
 const games = ref([]);
 const selectedGame = ref(null);
-const patchers = { soulgold: patchSoulGold, 'emerald-crest': patchCrest, 'wally-quest': patchWallyQuest };
+const patchers = {
+  soulgold: patchSoulGold,
+  'soulgold-mega-xtream': rom => patchSoulGold(rom, 'soulgold-mega-xtream'),
+  'emerald-crest': patchCrest,
+  'wally-quest': patchWallyQuest
+};
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
 const fileInput = ref();
 const file = shallowRef(null);
@@ -162,7 +167,7 @@ async function download() {
     setTimeout(() => URL.revokeObjectURL(url), 1500);
     status.value = verified
       ? `Patched. Open the new ROM and choose ${menuHint}.`
-      : 'Patched. This build passed structure checks and still needs emulator testing.';
+      : `Patched. Open the new ROM and choose ${menuHint}. This build passed structure checks and still needs emulator testing.`;
   } catch (error) {
     if (file.value === input) {
       failed.value = true;
@@ -220,7 +225,7 @@ async function download() {
                   </v-list-item>
                 </template>
               </v-select>
-              <ul v-if="game" class="build-list flex flex-wrap gap-2" aria-label="Tested builds">
+              <ul v-if="game" class="build-list flex flex-wrap gap-2" aria-label="Supported builds">
                 <li v-for="build in game.builds" :key="build">{{ build }}</li>
               </ul>
             </div>
@@ -271,7 +276,7 @@ async function download() {
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
         <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.32</span>
+      <span>v0.33</span>
     </footer>
     <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
       <v-card>

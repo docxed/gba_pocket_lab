@@ -24,6 +24,15 @@ export const soulGoldPatch={
       callback:'00b5fff7c3ff0520fcf71afd60f786fd012160f7affc60f787fd012002bc0847',
       debugEntry:'bb2000b5064980008bf036fb0022054b1860054bc2540548fdf7d4ff01bc0047',
       normalBuilder:'1c48e9f6bdfd012804d13379f2180133147233711848e9f6b3fd3379012804d1f21801331b0610721b0e0221f2181172013312483371e9f6a3fd3379012805d10321f21801331b0611721b0e'
+    },
+    {
+      game:'soulgold-mega-xtream',
+      title:'POKEMON EMER',
+      source:'338f3bb39f3b315aaa6c3e358c0812c1a4e1e0f70e6d9e10f7ef857e9f5dde2f',
+      target:'0033c4412a6926ac3b2a08b134102963af208e4a715ebabede707fbdadf4747d',
+      callback:'00b5fff7c3ff0520fcf71afd60f724ff012160f74dfe60f725ff012002bc0847',
+      debugEntry:'bb2000b5064980008bf036f90022054b1860054bc2540548fdf7d4ff01bc0047',
+      normalBuilder:'1c48eaf65df9012804d13379f2180133147233711848eaf653f93379012804d1f21801331b0610721b0e0221f2181172013312483371eaf643f93379012805d10321f21801331b0611721b0e'
     }
   ],
   renderer:'cc4b9846cc4b09359b46cc4b2d069a462d0e1ee0',
@@ -33,20 +42,19 @@ export const soulGoldPatch={
 };
 const fromHex=value=>Uint8Array.from(value.match(/../g),byte=>parseInt(byte,16));
 
-export async function patchSoulGold(rom){
+export async function patchSoulGold(rom,game='soulgold'){
   if(rom.length<192||rom.length>soulGoldPatch.maxSize)throw Error('Select a GBA ROM between 192 bytes and 32 MiB.');
   const view=new DataView(rom.buffer,rom.byteOffset,rom.byteLength);
   const word=p=>view.getUint16(p,true);
   const header=new TextDecoder().decode(rom.subarray(0xa0,0xb0));
   const check=(-0x19-rom.subarray(0xa0,0xbd).reduce((sum,byte)=>sum+byte,0))&255;
-  const profile=soulGoldPatch.profiles.find(build=>header===build.title+'BPEE');
-  if(!profile||rom[0xb2]!==0x96||rom[0xbd]!==check){
+  const profiles=soulGoldPatch.profiles.filter(build=>(build.game??'soulgold')===game&&header===build.title+'BPEE');
+  if(!profiles.length||rom[0xb2]!==0x96||rom[0xbd]!==check){
     throw Error('The GBA header does not match a supported SoulGold build.');
   }
   if(!globalThis.crypto?.subtle)throw Error('Open Pocket Lab over HTTPS or localhost to verify the ROM.');
   const sha256=async bytes=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),
     byte=>byte.toString(16).padStart(2,'0')).join('');
-  const verified=await sha256(rom)===profile.source;
   const unsupported=()=>Error('Unsupported SoulGold layout or ROM already patched.');
   const encoded=text=>[...text].map(char=>enc[char]);
   const matches=(p,bytes)=>p>=0&&p+bytes.length<=rom.length&&bytes.every((byte,i)=>rom[p+i]===byte);
@@ -85,9 +93,18 @@ export async function patchSoulGold(rom){
     return link?[0xf000|((delta>>12)&2047),0xf800|((delta>>1)&2047)]:[0xe000|((delta>>1)&2047)];
   }
 
-  const callback=locate(fromHex(profile.callback));
-  const debugEntry=locate(fromHex(profile.debugEntry));
   const renderer=locate(fromHex(soulGoldPatch.renderer));
+  // Resolve the action table from the renderer before selecting a build with a shared header.
+  const table=literal(renderer);
+  const docsId=15,cheatId=13;
+  if(table<192||table%4||table+(docsId+1)*8>rom.length)throw unsupported();
+  const docsAction=table+docsId*8,cheatAction=table+cheatId*8;
+  const callbackPointer=view.getUint32(cheatAction+4,true);
+  const callback=callbackPointer-BASE-1;
+  if(callback<192||callback%2)throw unsupported();
+  const profile=profiles.find(build=>matches(callback,fromHex(build.callback)));
+  if(!profile||locate(fromHex(profile.callback))!==callback)throw unsupported();
+  const debugEntry=locate(fromHex(profile.debugEntry));
   const prefix=fromHex(profile.normalBuilder);
   const tail=fromHex(soulGoldPatch.normalTail);
   const builder=locate([...prefix,...tail])+prefix.length;
@@ -97,16 +114,11 @@ export async function patchSoulGold(rom){
     !matches(advance,fromHex(soulGoldPatch.advanceState))||
     branchTarget(advance+6)!==branchTarget(docsTail+16))throw unsupported();
 
-  // Resolve the action table from the renderer's literal, and cross-check both menu entries.
-  const table=literal(renderer);
-  const docsId=15,cheatId=13;
-  if(table<192||table%4||table+(docsId+1)*8>rom.length)throw unsupported();
-  const docsAction=table+docsId*8,cheatAction=table+cheatId*8;
+  // Cross-check both menu entries.
   const debugLabel=view.getUint32(cheatAction,true)-BASE;
   const docsLabel=view.getUint32(docsAction,true)-BASE;
   const docsCallback=view.getUint32(docsAction+4,true)-BASE;
   if(!matches(debugLabel,[...encoded('Debug'),255])||!matches(docsLabel,[...encoded('Docs'),255])||
-    view.getUint32(cheatAction+4,true)!==BASE+callback+1||
     docsCallback<192||docsCallback>=rom.length||!(docsCallback&1))throw unsupported();
   const debugActions=literal(debugEntry+22);
   if(debugActions<192||debugActions%4||debugActions+4*12>rom.length||
@@ -136,6 +148,7 @@ export async function patchSoulGold(rom){
   output.set(callbackWords.flatMap(value=>le(value,2)),callback);
   output.set(builderWords.flatMap(value=>le(value,2)),builder);
   output.set(encoded('Cheat'),debugLabel);
+  const verified=await sha256(rom)===profile.source;
   if(verified&&await sha256(output)!==profile.target)throw Error('Patched ROM checksum mismatch.');
   return {output,verified};
 }

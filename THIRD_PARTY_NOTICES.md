@@ -10,6 +10,8 @@ Proposed MIT license covers original project code only, not ROMs, Pokémon asset
 
 - SoulGold title-screen thumbnail: https://pokemonsoulgold.com/images/game/title-screen-full.webp
 
+- SoulGold MegaXtream cover thumbnail: [User-supplied artwork](https://files.catbox.moe/dy8g1k.jpg).
+
 - Emerald Crest cover thumbnail by ThatSimpleDev: https://thatsimpledev.itch.io/emerald-crest
 
 - Wally Quest cover thumbnail supplied by the user from https://www.pokeharbor.com/wp-content/uploads/2022/10/Pokemon-Wally-Quest.png
