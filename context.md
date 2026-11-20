@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.41
+# Project context — Poké Lab v0.42
 
 The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Noto Sans Thai Looped as the first choice for UI text, with system fallbacks for missing glyphs. Project communication uses Thai, and source documentation is in English.
 
@@ -9,6 +9,7 @@ The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Not
 - The `rom` query parameter follows the game selector and works with browser navigation. A change of game clears the selected file. The Misc view continues to use the URL fragment.
 - The Game selector uses Vuetify autocomplete to filter catalog names and build labels. Search ignores case and accents. The list shows cover art, supported builds, and the current selection.
 - The hint under the supported builds tells users to choose a ROM already patched to the selected hack version. The file chooser references the same hint for assistive technology.
+- Patcher accepts any filename, trims uniform trailing zero or FF padding beyond the cartridge window (or the known Crest input length), and still validates the selected game's ROM. Misc scans the first 32 MiB of larger files and reports when it does so.
 - Patcher and Misc share a light/dark preference. The default follows the system setting. The header toggle saves a preference locally and updates the mounted Misc iframe in place.
 - Patcher offers English and Thai for game search, ROM selection, the download action, cheat notes, and status messages. It uses the browser's primary language initially and saves the EN/TH selection locally. Game names, build labels, menu paths, technical errors, and Misc use their source wording.
 - The SoulGold module validates the header, Thumb instructions, branches and menu tables. It resolves the Start-menu action table and checks the callback before selecting a layout, since TH Nonplae and MegaXtream share an Emerald header. It checks output hashes for English v1.2.1, TH Nonplae 1.2, and MegaXtream vTH.1.1.4-4. Other structural matches are labeled as untested in an emulator.

@@ -22,6 +22,15 @@ function element() {
 }
 
 async function main() {
+  const {readGbaRom} = await import('../src/lib/rom-file.js');
+  const mockRom = Uint8Array.of(1, 2, 3);
+  assert.deepEqual(await readGbaRom(new Blob([mockRom]), mockRom.length), mockRom);
+  for (const padding of [0x00, 0xff]) {
+    const tail = new Uint8Array(1024 * 1024 + 1).fill(padding);
+    assert.deepEqual(await readGbaRom(new Blob([mockRom, tail]), mockRom.length), mockRom);
+    tail[tail.length - 1] = 1;
+    await assert.rejects(readGbaRom(new Blob([mockRom, tail]), mockRom.length), /extra data/);
+  }
   const {applyTheme, savedTheme, saveTheme} = await import('../src/lib/theme.js');
   const data = new Map();
   const browser = {localStorage: {getItem: key => data.get(key), setItem: (key, value) => data.set(key, value)}};
@@ -139,6 +148,17 @@ async function main() {
   await older;
 
   assert.match(elements.get('romstatus').textContent, /^newer\.gba .* TEST /);
+  input.files = [{
+    name: 'padded.bin',
+    size: 32 * 1024 * 1024 + 1,
+    slice: (start, end) => {
+      assert.equal(start, 0);
+      assert.equal(end, 32 * 1024 * 1024);
+      return {arrayBuffer: async () => bytes};
+    }
+  }];
+  await input.onchange();
+  assert.match(elements.get('romstatus').textContent, /^padded\.bin .* \(first 32 MiB scanned\)$/);
   assert.equal(elements.get('autoshopout').textContent, 'No supported shops \u2014 use manual search');
   const {patchSoulGold: patch, soulGoldPatch} = await import('../src/lib/soulgold.js');
   await assert.rejects(patch(new Uint8Array(191)), /32 MiB/);
@@ -200,6 +220,8 @@ async function main() {
       assert.equal(verified, true);
       assert.equal(hash(output), 'd64c7b300a5234117f9524cbea3c608616f88df47112f5bbfc515efcd3ac7604');
       assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      const padded = await readGbaRom(new Blob([input, Uint8Array.of(0xff, 0xff)]));
+      assert.equal(hash((await patchThetaEmerald(padded)).output), hash(output));
       await assert.rejects(patchThetaEmerald(output), /unpatched Pok.*Theta Emerald/);
       console.log('Verified Theta Emerald patch for ' + file);
       continue;
@@ -231,6 +253,9 @@ async function main() {
       assert.equal(verified, true);
       assert.equal(hash(output), '4e4e157dede42798988bbddcff6c81944583d926dcec95635b0ba5084c5f8ddd');
       assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      assert.equal(input.length, crestPatch.sourceSize);
+      const padded = await readGbaRom(new Blob([input, new Uint8Array(32 * 1024 * 1024 - input.length + 1)]), crestPatch.sourceSize);
+      assert.equal(hash((await patchCrest(padded)).output), hash(output));
       await assert.rejects(patchCrest(output), /unpatched Emerald Crest/);
       await assert.rejects(patch(input), /SoulGold/);
       console.log('Verified Emerald Crest patch for ' + file);

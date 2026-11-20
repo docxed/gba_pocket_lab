@@ -1,12 +1,13 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vue';
-import { patchCrest } from './lib/crest.js';
+import { crestPatch, patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
 import { patchThetaEmerald } from './lib/theta-emerald.js';
 import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
-import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
+import { patchSoulGold } from './lib/soulgold.js';
+import { readGbaRom } from './lib/rom-file.js';
 import ItemRain from './ItemRain.vue';
 import { applyTheme, savedTheme, saveTheme } from './lib/theme.js';
 import { patcherCopy, patcherLanguage, savePatcherLanguage } from './lib/patcher-language.js';
@@ -125,9 +126,9 @@ function resizeMisc(event) {
 
 function selectFile(next) {
   if (busy.value || !next) return;
-  failed.value = !/\.gba$/i.test(next.name) || next.size < 192 || next.size > soulGoldPatch.maxSize;
-  file.value = failed.value ? null : next;
-  status.value = failed.value ? 'invalidFile' : '';
+  failed.value = false;
+  file.value = next;
+  status.value = '';
 }
 
 function inputChanged(event) {
@@ -160,12 +161,13 @@ async function download() {
   failed.value = false;
   status.value = 'patching';
   try {
-    const { output, verified } = await patcher(new Uint8Array(await input.arrayBuffer()));
+    const rom = await readGbaRom(input, gameId === 'emerald-crest' ? crestPatch.sourceSize : undefined);
+    const { output, verified } = await patcher(rom);
     if (file.value !== input) return;
     const url = URL.createObjectURL(new Blob([output], { type: 'application/octet-stream' }));
     const link = document.createElement('a');
     link.href = url;
-    const stem = input.name.replace(/\.gba$/i, '');
+    const stem = input.name.replace(/\.(?:gba|bin)$/i, '');
     link.download = gameId === 'unbound' ? stem.replace(/-Cheat$/i, '') + '-Start-Cheat.gba' : stem + '-Cheat.gba';
     document.body.append(link);
     link.click();
@@ -267,7 +269,7 @@ async function download() {
 
             <div class="rom-field">
               <div class="field-label">{{ copy.rom }}</div>
-              <input ref="fileInput" type="file" accept=".gba" hidden @change="inputChanged">
+              <input ref="fileInput" type="file" hidden @change="inputChanged">
               <div class="dropzone" :class="{ dragging: drag, selected: file }" @dragover.prevent="drag = true" @dragleave="drag = false" @drop.prevent="dropFile">
                 <button type="button" class="file-choose" :disabled="busy" :aria-describedby="game ? 'rom-build-hint' : undefined" @click="fileInput.click()">
                   <span class="file-icon"><v-icon :icon="file ? '$labFile' : '$labUpload'" size="23" /></span>
@@ -314,7 +316,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.41</span>
+      <span>v0.42</span>
     </footer>
   </v-app>
 </template>
