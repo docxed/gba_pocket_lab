@@ -1,6 +1,6 @@
 {
   "name": "poke-lab",
-  "version": "0.34.0",
+  "version": "0.35.0",
   "description": "Browser-local GBA ROM patches and tools.",
   "scripts": {
     "test": "node tests/regression.cjs && node tests/money.cjs && node --test tests/visits.test.js tests/item-rain.test.js",

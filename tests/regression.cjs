@@ -115,6 +115,20 @@ async function main() {
 
   const {patchWallyQuest, wallyQuestPatch} = await import('../src/lib/wally-quest.js');
   await assert.rejects(patchWallyQuest(new Uint8Array(32 * 1024 * 1024)), /unpatched Pok.*Wally Quest/);
+  const {patchUnbound} = await import('../src/lib/unbound.js');
+  await assert.rejects(patchUnbound(new Uint8Array(192)), /Choose Pok.*Unbound/);
+  const otherFireRed = new Uint8Array(32 * 1024 * 1024);
+  otherFireRed.set(Buffer.from('POKEMON FIREBPRE01\x96', 'latin1'), 0xa0);
+  otherFireRed[0xbd] = 0x68;
+  await assert.rejects(patchUnbound(otherFireRed), /Choose Pok.*Unbound/);
+  const englishStart = '1cb911832c719bb72119293def174801e637130e5cefc5ad7dbd1e20aa217251';
+  const thaiStart = '1d2049795e0d95a43eb91c4b8dfc55100e8e49284e4e2aa00d3ea3c50c6ce3df';
+  const unboundFixtures = new Map([
+    ['7aa25bbf568f7cfcf6ee1cf2e9e6ff637350b3d0705c2375cabb6baa7d9739f7', englishStart],
+    ['4619d6df7e3ec3a37bb8fd97e506da7b0687ddcb55f1475f76a0726121cdf1b7', englishStart],
+    ['f793fa46f751ffbfc0ff4f2cd6dd4f0c8d0b95359715750c82c8d26a40e30250', thaiStart],
+    ['42d211176c1537c73fedec646c8925952f24507cdc91f0af64433f4055c0b80e', thaiStart]
+  ]);
 
   const fixtures = new Map([
     ['2cbd389822d80db1b7575b4e064e155bcfdbe17d000b324076d99fa6f7a8804b', { target: '9cc2de4679a7e1c2e79ca2ff2541e0835d6b08fa4c9c3ba484f16f8c6364bce3' }],
@@ -125,6 +139,18 @@ async function main() {
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);
+    if (unboundFixtures.has(before)) {
+      const {output, verified} = await patchUnbound(input);
+      assert.equal(verified, true);
+      assert.equal(hash(output), unboundFixtures.get(before));
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      await assert.rejects(patchUnbound(output), /Choose Pok.*Unbound/);
+      const variant = input.slice();
+      variant[0xbc] ^= 1;
+      await assert.rejects(patchUnbound(variant), /Choose Pok.*Unbound/);
+      console.log('Verified Pokémon Unbound patch for ' + file);
+      continue;
+    }
     if (before === wallyQuestPatch.source) {
       const {output, verified} = await patchWallyQuest(input);
       assert.equal(verified, true);

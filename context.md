@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.34
+# Project context — Poké Lab v0.35
 
 The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
 
@@ -11,6 +11,7 @@ The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The int
 - The SoulGold module validates the header, Thumb instructions, branches and menu tables. It resolves the Start-menu action table and checks the callback before selecting a layout, since TH Nonplae and MegaXtream share an Emerald header. It checks output hashes for English v1.2.1, TH Nonplae 1.2, and MegaXtream vTH.1.1.4-4. Other structural matches are labeled as untested in an emulator.
 - MegaXtream vTH.1.1.4-4 has its own Patcher entry and cover. A fresh game in the mGBA Libretro core (0.11-212-7a12d6d) verified `Start > Cheat`, the Utilities submenu, returning to Start, and opening the existing Docs screen. Using `Give X > Max Money` raised the Trainer Card balance from 3,000 to 9,999,999. A local Edge check confirmed the catalog entry, cover, and download hash.
 - The Emerald Crest v1.0.F patch matches an exact input hash, follows Start-menu action pointers and validates Thumb instructions. It adds CHEAT to the right menu page and calls the original icon cleanup before opening Debug. The output hash matches the ROM tested in mGBA.
+- The Pokémon Unbound patch accepts exact hashes for English v2.1.1.1 and TH Nonplae 2.0 and the earlier R-button outputs. It appends Cheat after the stock Start-menu sort when Game Settings is available and there is room. The new callback closes the Start UI and launches the native debug script without fading the field. The optional R-button shortcut is still available. The mGBA Libretro core (0.11-212-7a12d6d) opened Cheat and reopened Start in both languages. Max Coinage increased the wallet in the English build.
 - Wally Quest v1.1 adds MAX CHEATS for the verified build. The patch derives both item IDs from the ROM and uses its original wallet and bag functions. It sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each, subject to bag capacity. mGBA verified the resulting balances and quantities and that using the action again did not add duplicates. The normal Start menu fits nine entries and omits EXIT when the original entries fill every slot.
 - Vite builds `misc.html` as a second entry. The Vue shell loads it when a user opens Misc and keeps it mounted when switching tabs. This preserves the existing tools and their state.
 - ROMs, RAM dumps, and pasted debugger logs stay in browser memory. The patcher produces a separate download and never opens emulator saves. The app has no upload endpoint or persistent tool storage.

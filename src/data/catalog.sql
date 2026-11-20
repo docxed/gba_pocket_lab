@@ -18,10 +18,13 @@ INSERT INTO games VALUES
   ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the existing debug menu and keeps Docs available.', 1),
   ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the existing debug menu and keeps Docs available.', 2),
   ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Adds CHEAT to the right page of the Start menu and opens the existing debug menu.', 3),
-  ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room.', 4);
+  ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room.', 4),
+  ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Select Cheat on the right of the Start menu to open the existing debug menu.', 5);
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),
   ('soulgold-mega-xtream', 1, 'vTH.1.1.4-4'),
   ('emerald-crest', 1, 'v1.0.F'),
-  ('wally-quest', 1, 'v1.1');
+  ('wally-quest', 1, 'v1.1'),
+  ('unbound', 1, 'English v2.1.1.1'),
+  ('unbound', 2, 'TH Nonplae 2.0');

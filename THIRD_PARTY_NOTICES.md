@@ -12,6 +12,8 @@ Proposed MIT license covers original project code only, not ROMs, Pokémon asset
 
 - SoulGold MegaXtream cover thumbnail: [User-supplied artwork](https://files.catbox.moe/dy8g1k.jpg).
 
+- Pokémon Unbound title-screen thumbnail: [User-supplied reference](https://i.redd.it/hpkaeas6vaqc1.png).
+
 - Emerald Crest cover thumbnail by ThatSimpleDev: https://thatsimpledev.itch.io/emerald-crest
 
 - Wally Quest cover thumbnail supplied by the user from https://www.pokeharbor.com/wp-content/uploads/2022/10/Pokemon-Wally-Quest.png

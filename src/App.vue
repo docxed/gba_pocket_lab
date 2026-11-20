@@ -2,6 +2,7 @@
 import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
+import { patchUnbound } from './lib/unbound.js';
 import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
@@ -16,7 +17,8 @@ const patchers = {
   soulgold: patchSoulGold,
   'soulgold-mega-xtream': rom => patchSoulGold(rom, 'soulgold-mega-xtream'),
   'emerald-crest': patchCrest,
-  'wally-quest': patchWallyQuest
+  'wally-quest': patchWallyQuest,
+  unbound: patchUnbound
 };
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
 const fileInput = ref();
@@ -148,7 +150,8 @@ function removeFile() {
 }
 
 async function download() {
-  const patcher = patchers[selectedGame.value];
+  const gameId = selectedGame.value;
+  const patcher = patchers[gameId];
   if (!file.value || !patcher || busy.value) return;
   const input = file.value;
   const menuHint = game.value.menuHint;
@@ -161,7 +164,8 @@ async function download() {
     const url = URL.createObjectURL(new Blob([output], { type: 'application/octet-stream' }));
     const link = document.createElement('a');
     link.href = url;
-    link.download = input.name.replace(/\.gba$/i, '') + '-Cheat.gba';
+    const stem = input.name.replace(/\.gba$/i, '');
+    link.download = gameId === 'unbound' ? stem.replace(/-Cheat$/i, '') + '-Start-Cheat.gba' : stem + '-Cheat.gba';
     document.body.append(link);
     link.click();
     link.remove();
@@ -290,7 +294,7 @@ async function download() {
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
         <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.34</span>
+      <span>v0.35</span>
     </footer>
     <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
       <v-card>
