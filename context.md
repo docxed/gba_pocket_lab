@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.35
+# Project context — Poké Lab v0.36
 
 The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
 
@@ -12,6 +12,7 @@ The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The int
 - MegaXtream vTH.1.1.4-4 has its own Patcher entry and cover. A fresh game in the mGBA Libretro core (0.11-212-7a12d6d) verified `Start > Cheat`, the Utilities submenu, returning to Start, and opening the existing Docs screen. Using `Give X > Max Money` raised the Trainer Card balance from 3,000 to 9,999,999. A local Edge check confirmed the catalog entry, cover, and download hash.
 - The Emerald Crest v1.0.F patch matches an exact input hash, follows Start-menu action pointers and validates Thumb instructions. It adds CHEAT to the right menu page and calls the original icon cleanup before opening Debug. The output hash matches the ROM tested in mGBA.
 - The Pokémon Unbound patch accepts exact hashes for English v2.1.1.1 and TH Nonplae 2.0 and the earlier R-button outputs. It appends Cheat after the stock Start-menu sort when Game Settings is available and there is room. The new callback closes the Start UI and launches the native debug script without fading the field. The optional R-button shortcut is still available. The mGBA Libretro core (0.11-212-7a12d6d) opened Cheat and reopened Start in both languages. Max Coinage increased the wallet in the English build.
+- Theta Emerald: The Last Dance (Completo) adds Cheat to the normal Start menu for the verified input hash. It locates the wallet and bag routines and derives item IDs from the ROM records. The menu reserves a slot for Cheat when the original eight slots are full. A fresh game in the mGBA Libretro core (0.11-212-7a12d6d) showed 9,999,999 on the Trainer Card and 99 Rare Candies and 99 Master Balls in the Bag. A second use kept both item quantities at 99.
 - Wally Quest v1.1 adds MAX CHEATS for the verified build. The patch derives both item IDs from the ROM and uses its original wallet and bag functions. It sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each, subject to bag capacity. mGBA verified the resulting balances and quantities and that using the action again did not add duplicates. The normal Start menu fits nine entries and omits EXIT when the original entries fill every slot.
 - Vite builds `misc.html` as a second entry. The Vue shell loads it when a user opens Misc and keeps it mounted when switching tabs. This preserves the existing tools and their state.
 - ROMs, RAM dumps, and pasted debugger logs stay in browser memory. The patcher produces a separate download and never opens emulator saves. The app has no upload endpoint or persistent tool storage.
@@ -35,6 +36,10 @@ The app attempts one increment per tab session using a `sessionStorage` flag. Re
 3. Set the GitHub repository Actions variable `VITE_VISIT_COUNTER_URL` to the deployed Worker URL ending in `/visits`, then run the Pages workflow. For local testing, set the same variable before starting Vite and use a Worker configured to allow the local site origin.
 
 With no endpoint configured, the website makes no counter requests. See [Cloudflare's D1 setup guide](https://developers.cloudflare.com/d1/get-started/).
+
+## Radical Red 4.1 investigation
+
+Read-only inspection of a local 32 MiB FireRed-based ROM found game-encoded strings for `Woyaopp`, `EZCatch`, `DexAll`, `SO2Toxic`, and `TeamPreview`, each with an aligned ROM pointer reference. The [developer's 4.1 changelog](https://docs.google.com/document/d/1--HIABJp7iekqgFAYEN4To1EGdy8GkBMRT6HD1bTYeE/edit) identifies the bedroom NES as the entry point for `Woyaopp`. The string scan found no matching Cheat or Debug menu label. The existence of a callable Start-menu debug feature remains unverified. Radical Red is outside the current Patcher catalog, and this investigation did not modify the ROM or run it in an emulator.
 
 ## Remaining roadmap
 

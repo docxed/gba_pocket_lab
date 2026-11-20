@@ -116,7 +116,12 @@ async function main() {
   const {patchWallyQuest, wallyQuestPatch} = await import('../src/lib/wally-quest.js');
   await assert.rejects(patchWallyQuest(new Uint8Array(32 * 1024 * 1024)), /unpatched Pok.*Wally Quest/);
   const {patchUnbound} = await import('../src/lib/unbound.js');
+  const {patchThetaEmerald, thetaEmeraldPatch} = await import('../src/lib/theta-emerald.js');
   await assert.rejects(patchUnbound(new Uint8Array(192)), /Choose Pok.*Unbound/);
+  await assert.rejects(patchThetaEmerald(emeraldHeaderOnly), /unpatched Pok.*Theta Emerald/);
+  const unsupportedEmerald = new Uint8Array(32 * 1024 * 1024);
+  unsupportedEmerald.set(emeraldHeaderOnly);
+  await assert.rejects(patchThetaEmerald(unsupportedEmerald), /unpatched Pok.*Theta Emerald/);
   const otherFireRed = new Uint8Array(32 * 1024 * 1024);
   otherFireRed.set(Buffer.from('POKEMON FIREBPRE01\x96', 'latin1'), 0xa0);
   otherFireRed[0xbd] = 0x68;
@@ -139,6 +144,15 @@ async function main() {
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);
+    if (before === thetaEmeraldPatch.source) {
+      const {output, verified} = await patchThetaEmerald(input);
+      assert.equal(verified, true);
+      assert.equal(hash(output), 'd64c7b300a5234117f9524cbea3c608616f88df47112f5bbfc515efcd3ac7604');
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      await assert.rejects(patchThetaEmerald(output), /unpatched Pok.*Theta Emerald/);
+      console.log('Verified Theta Emerald patch for ' + file);
+      continue;
+    }
     if (unboundFixtures.has(before)) {
       const {output, verified} = await patchUnbound(input);
       assert.equal(verified, true);

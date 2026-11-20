@@ -1,4 +1,5 @@
 ROM.lnk
+/CODEX_HANDOFF.md
 node_modules/
 dist/
 *.gba

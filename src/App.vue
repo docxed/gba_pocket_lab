@@ -3,6 +3,7 @@ import { computed, onBeforeUnmount, onMounted, ref, shallowRef } from 'vue';
 import { patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
+import { patchThetaEmerald } from './lib/theta-emerald.js';
 import patcherBanner from './assets/patcher-banner.webp';
 import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold, soulGoldPatch } from './lib/soulgold.js';
@@ -18,7 +19,8 @@ const patchers = {
   'soulgold-mega-xtream': rom => patchSoulGold(rom, 'soulgold-mega-xtream'),
   'emerald-crest': patchCrest,
   'wally-quest': patchWallyQuest,
-  unbound: patchUnbound
+  unbound: patchUnbound,
+  'theta-emerald': patchThetaEmerald
 };
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
 const fileInput = ref();
@@ -294,7 +296,7 @@ async function download() {
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
         <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.35</span>
+      <span>v0.36</span>
     </footer>
     <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
       <v-card>

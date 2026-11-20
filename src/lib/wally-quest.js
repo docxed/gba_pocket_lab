@@ -1,3 +1,5 @@
+import { applyEmeraldCheat, gbaText } from './emerald-cheat.js';
+
 ﻿export const wallyQuestPatch = {
   source: 'e43512df384d2c7cf9f697bc024487c243ee48f43eb530678b5de3abb4afc2c7',
   target: '06e73d932827d072ced16d00ce9e8621550d545794bd1332b2872aaee91ff4ea'
@@ -19,8 +21,6 @@ const signatures = {
   itemIdLimit: '00b50004010cbe208000814201d8081c00e0002002bc0847'
 };
 const fromHex = hex => Uint8Array.from(hex.match(/../g), byte => parseInt(byte, 16));
-const gbaText = text => Uint8Array.from([...text].map(char =>
-  char === ' ' ? 0 : char.charCodeAt(0) + (char >= 'a' ? 116 : 122)).concat(255));
 const sha256 = async bytes => Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256', bytes)),
   byte => byte.toString(16).padStart(2, '0')).join('');
 
@@ -121,48 +121,13 @@ export async function patchWallyQuest(rom) {
   let end = rom.length;
   while (end > 192 && rom[end - 1] === 255) end--;
   const payload = (end + 3) & ~3;
-  const appendStub = payload + 128, callback = payload + 168, fadeStub = payload + 324, label = payload + 360;
-  const labelBytes = gbaText('MAX CHEATS');
-  if (label + labelBytes.length > rom.length) throw unsupported();
-  const output = rom.slice();
-  const patched = new DataView(output.buffer);
-  const words = (offset, values) => values.forEach((value, i) => patched.setUint16(offset + 2 * i, value, true));
-  const pointers = (offset, values) => values.forEach((value, i) => patched.setUint32(offset + 4 * i, value, true));
-  const thumb = offset => base + offset + 1;
-
-  output.set(rom.subarray(table, table + tableSize), payload);
-  pointers(payload + tableSize, [base + label, thumb(callback)]);
-  pointers(renderTable, [base + payload]);
-  pointers(dispatchTable, [base + payload]);
-  output.set(labelBytes, label);
-
-  // Append EXIT and MAX CHEATS, reserving one slot for MAX CHEATS if the normal list is full.
-  words(builder, [0x4b01, 0x4718, 0x46c0, 0x46c0]);
-  pointers(builder + 8, [thumb(appendStub)]);
-  words(appendStub, [0x4907, 0x4a08, 0x7813, 0x18c9, 0x2b08, 0xd203, 0x2008, 0x7008,
-    0x3101, 0x3301, 0x200f, 0x7008, 0x3301, 0x7013, 0xbc01, 0x4700]);
-  pointers(appendStub + 32, [actions, count]);
-
-  // Set the wallet, top up both items, then tail-call the normal exit.
-  const cheatCallback = '00b51b48006800280bd01a4940181a491a4b00f00af81a4800f008f8194800f005f801bc8646184b18471847';
-  // Binary-search the current quantity via CheckBagHasItem, then use AddBagItem
-  // for the difference up to 99. The game manages bag capacity and encryption.
-  const topUpRoutine = 'f0b5040000256326154fb5420ed2a81901304008010001b4200000f012f802bc002801d00d00f0e74e1eeee7632d05d06321491b20000b4f00f003f8f0bc08bc18473847';
-  const cheatCode = fromHex(cheatCallback + topUpRoutine);
-  output.set(cheatCode, callback);
-  pointers(callback + cheatCode.length, [
-    saveBlock, walletOffset, cap, thumb(setMoney), masterBall, rareCandy,
-    exitCallback, thumb(hasItem), thumb(addItem)
-  ]);
-
-  // Preserve the original fade for every existing action and skip it for MAX CHEATS.
   const fade = dispatcher + 48;
-  words(fade, [0x4800, 0x4700]);
-  pointers(fade + 4, [thumb(fadeStub)]);
-  words(fadeStub, [0x4805, 0x4281, 0xd004, 0x2001, 0x2100, 0x4b04,
-    0xf000, 0xf802, 0x4b03, 0x4718, 0x4718, 0x46c0]);
-  pointers(fadeStub + 24, [thumb(callback), thumb(callTarget(fade + 4)), thumb(fade + 8)]);
-
+  const output = applyEmeraldCheat(rom, {
+    payload, table, renderTable, dispatchTable, builder, actions, count,
+    cheatId, maxEntries: 9, exitId: 8, exitCallback, name: 'MAX CHEATS',
+    saveBlock, walletOffset, cap, setMoney, masterBall, rareCandy, hasItem, addItem,
+    fade, startFade: callTarget(fade + 4), unsupported
+  });
   if (await sha256(output) !== wallyQuestPatch.target) throw Error('Patched ROM checksum mismatch.');
   return { output, verified: true };
 }

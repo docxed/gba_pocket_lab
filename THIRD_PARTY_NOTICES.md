@@ -14,6 +14,8 @@ Proposed MIT license covers original project code only, not ROMs, Pokémon asset
 
 - Pokémon Unbound title-screen thumbnail: [User-supplied reference](https://i.redd.it/hpkaeas6vaqc1.png).
 
+- Pokémon Theta Emerald: The Last Dance title-screen thumbnail from the local ROM supplied by the user. [Creator's release thread](https://www.pokecommunity.com/threads/pok%C3%A9mon-theta-emerald-the-last-dance.502646/)
+
 - Emerald Crest cover thumbnail by ThatSimpleDev: https://thatsimpledev.itch.io/emerald-crest
 
 - Wally Quest cover thumbnail supplied by the user from https://www.pokeharbor.com/wp-content/uploads/2022/10/Pokemon-Wally-Quest.png
