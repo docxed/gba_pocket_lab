@@ -32,6 +32,25 @@ async function main() {
   const patcherPage = fs.readFileSync(__dirname + '/../index.html', 'utf8');
   assert.match(patcherPage, /<meta name="referrer" content="no-referrer">/);
 
+  const patcherView = fs.readFileSync(__dirname + '/../src/App.vue', 'utf8');
+  const selector = patcherView.match(/<v-autocomplete\s+id="game-select"[^>]*>/)?.[0];
+  assert.ok(selector, 'The game selector supports text input');
+  const filterKeys = selector.match(/:filter-keys="([^"]+)"/)?.[1].match(/[\w.]+/g);
+  assert.ok(filterKeys);
+  const {filterItems} = await import('vuetify/lib/composables/filter.js');
+  const games = [
+    {title: 'Pokémon SoulGold', raw: {builds: ['English 1.2.1', 'TH Nonplae 1.2']}},
+    {title: 'Pokémon SoulGold MegaXtream', raw: {builds: ['vTH.1.1.4-4']}},
+    {title: 'Pokémon Emerald Crest', raw: {builds: ['v1.0.F']}}
+  ];
+  const search = query => filterItems(games, query, {
+    filterKeys, ignoreAccents: selector.includes('ignore-accents')
+  }).map(({index}) => index);
+  assert.deepEqual(search('pokemon emerald'), [2]);
+  assert.deepEqual(search('SOULGOLD'), [0, 1]);
+  assert.deepEqual(search('1.1.4-4'), [1]);
+  assert.deepEqual(search('no such game'), []);
+
   const elements = new Map(ids.map(id => [id, element()]));
   const panels = sections.map(([, id, attrs]) => Object.assign(elements.get(id), { id, hidden: attrs.includes('hidden') }));
   const buttons = tabs.map(([, attrs, id]) => ({

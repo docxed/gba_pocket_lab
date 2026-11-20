@@ -11,6 +11,7 @@ import ItemRain from './ItemRain.vue';
 const page = ref(location.hash === '#misc' ? 'misc' : 'patch');
 const games = ref([]);
 const selectedGame = ref(null);
+const gameSearch = ref('');
 const patchers = {
   soulgold: patchSoulGold,
   'soulgold-mega-xtream': rom => patchSoulGold(rom, 'soulgold-mega-xtream'),
@@ -211,20 +212,33 @@ async function download() {
           <div class="patch-fields">
             <div class="game-field">
               <label for="game-select" class="field-label">Game</label>
-              <v-select
+              <v-autocomplete
                 id="game-select" :model-value="selectedGame" @update:model-value="chooseGame" :items="games" item-title="name" item-value="id"
+                v-model:search="gameSearch"
+                :filter-keys="['title', 'raw.builds']" ignore-accents auto-select-first
                 :disabled="!games.length || busy" variant="outlined" density="comfortable" hide-details
-                aria-label="Game" menu-icon="$labChevron" class="game-select"
+                placeholder="Search games or versions" autocomplete="off"
+                menu-icon="$labChevron" :menu-props="{ contentClass: 'game-menu', offset: 6 }" class="game-select"
               >
+                <template #prepend-inner>
+                  <span class="game-search-icon" aria-hidden="true"><v-icon icon="$labSearch" size="19" /></span>
+                  <span v-if="game && !gameSearch" class="game-search-hint" aria-hidden="true">Search games or versions</span>
+                </template>
                 <template #selection="{ item }">
-                  <span class="game-option"><img :src="item.cover" alt="">{{ item.name }}</span>
+                  <span class="game-option"><img :src="item.cover" alt=""><span>{{ item.name }}</span></span>
                 </template>
                 <template #item="{ item, props }">
-                  <v-list-item v-bind="props">
+                  <v-list-item v-bind="props" role="option" :subtitle="item.builds.join(' · ')" class="game-result">
                     <template #prepend><img class="game-cover" :src="item.cover" alt=""></template>
+                    <template #append>
+                      <v-icon v-if="item.id === selectedGame" icon="$labCheck" size="18" class="game-result-check" />
+                    </template>
                   </v-list-item>
                 </template>
-              </v-select>
+                <template #no-data>
+                  <div class="game-menu-empty">No matching games</div>
+                </template>
+              </v-autocomplete>
               <ul v-if="game" class="build-list flex flex-wrap gap-2" aria-label="Supported builds">
                 <li v-for="build in game.builds" :key="build">{{ build }}</li>
               </ul>
@@ -276,7 +290,7 @@ async function download() {
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
         <p v-if="counter.enabled">A visit counter adds to a shared total once per browser tab. Its request contains no file data.</p>
       </details>
-      <span>v0.33</span>
+      <span>v0.34</span>
     </footer>
     <v-dialog v-model="visitsOpen" max-width="360" aria-labelledby="visit-count-title">
       <v-card>

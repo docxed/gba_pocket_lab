@@ -1,14 +1,14 @@
 import { createApp } from 'vue';
 import { createVuetify } from 'vuetify';
 import {
-  VApp, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
-  VIcon, VListItem, VSelect, VSpacer, VTab, VTabs
+  VApp, VAutocomplete, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
+  VIcon, VListItem, VSpacer, VTab, VTabs
 } from 'vuetify/components';
 import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import {
-  mdiChevronDown, mdiClose, mdiDotsHorizontal, mdiDownloadOutline, mdiFileCheckOutline,
-  mdiFlaskOutline, mdiGamepadVariantOutline, mdiLockOutline, mdiTrayArrowUp
+  mdiCheck, mdiChevronDown, mdiClose, mdiDotsHorizontal, mdiDownloadOutline, mdiFileCheckOutline,
+  mdiFlaskOutline, mdiGamepadVariantOutline, mdiLockOutline, mdiMagnify, mdiTrayArrowUp
 } from '@mdi/js';
 import '@fontsource-variable/noto-sans';
 import './style.css';
@@ -16,8 +16,8 @@ import App from './App.vue';
 
 const vuetify = createVuetify({
   components: {
-    VApp, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
-    VIcon, VListItem, VSelect, VSpacer, VTab, VTabs
+    VApp, VAutocomplete, VBtn, VCard, VCardActions, VCardText, VCardTitle, VDialog,
+    VIcon, VListItem, VSpacer, VTab, VTabs
   },
   icons: {
     defaultSet: 'mdi',
@@ -26,7 +26,8 @@ const vuetify = createVuetify({
       ...aliases,
       labFlask: mdiFlaskOutline, labGamepad: mdiGamepadVariantOutline, labMisc: mdiDotsHorizontal,
       labChevron: mdiChevronDown, labFile: mdiFileCheckOutline, labUpload: mdiTrayArrowUp,
-      labClose: mdiClose, labLock: mdiLockOutline, labDownload: mdiDownloadOutline
+      labClose: mdiClose, labLock: mdiLockOutline, labDownload: mdiDownloadOutline,
+      labSearch: mdiMagnify, labCheck: mdiCheck
     }
   },
   theme: {

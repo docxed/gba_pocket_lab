@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.33
+# Project context — Poké Lab v0.34
 
 The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
 
@@ -7,6 +7,7 @@ The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The int
 - The root Vite entry renders the ROM Patcher. The local SQL catalog provides game and build labels, cover images, menu paths, and per-game patch notes through SQLite (sql.js).
 - A decorative shower of Rare Candy, Master Ball, and Relic Gold sprites plays over the interactive page for 1.8 seconds on each page load. The sprites are bundled locally, and the animation is skipped when reduced motion is enabled.
 - The `rom` query parameter follows the game selector and works with browser navigation. A change of game clears the selected file. The Misc view continues to use the URL fragment.
+- The Game selector uses Vuetify autocomplete to filter catalog names and build labels. Search ignores case and accents. The list shows cover art, supported builds, and the current selection.
 - The SoulGold module validates the header, Thumb instructions, branches and menu tables. It resolves the Start-menu action table and checks the callback before selecting a layout, since TH Nonplae and MegaXtream share an Emerald header. It checks output hashes for English v1.2.1, TH Nonplae 1.2, and MegaXtream vTH.1.1.4-4. Other structural matches are labeled as untested in an emulator.
 - MegaXtream vTH.1.1.4-4 has its own Patcher entry and cover. A fresh game in the mGBA Libretro core (0.11-212-7a12d6d) verified `Start > Cheat`, the Utilities submenu, returning to Start, and opening the existing Docs screen. Using `Give X > Max Money` raised the Trainer Card balance from 3,000 to 9,999,999. A local Edge check confirmed the catalog entry, cover, and download hash.
 - The Emerald Crest v1.0.F patch matches an exact input hash, follows Start-menu action pointers and validates Thumb instructions. It adds CHEAT to the right menu page and calls the original icon cleanup before opening Debug. The output hash matches the ROM tested in mGBA.
