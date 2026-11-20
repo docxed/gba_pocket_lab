@@ -1,6 +1,6 @@
 {
   "name": "poke-lab",
-  "version": "0.40.0",
+  "version": "0.41.0",
   "description": "Browser-local GBA ROM patches and tools.",
   "scripts": {
     "test": "node tests/regression.cjs && node tests/money.cjs && node --test tests/item-rain.test.js",
@@ -21,7 +21,7 @@
   "homepage": "https://github.com/docxed/gba_pocket_lab#readme",
   "private": true,
   "dependencies": {
-    "@fontsource-variable/noto-sans": "^5.3.0",
+    "@fontsource-variable/noto-sans-thai-looped": "^5.3.0",
     "@mdi/js": "^7.4.47",
     "sql.js": "^1.17.0",
     "vue": "^3.5.45",

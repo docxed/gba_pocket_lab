@@ -46,6 +46,13 @@ async function main() {
   savePatcherLanguage('en', browser);
   assert.equal(patcherLanguage(browser), 'en');
   assert.deepEqual(Object.keys(patcherCopy.th), Object.keys(patcherCopy.en));
+  const fonts = fs.readFileSync(__dirname + '/../src/fonts.css', 'utf8');
+  assert.match(fonts, /@import "@fontsource-variable\/noto-sans-thai-looped"/);
+  assert.match(fonts, /--lab-font: "Noto Sans Thai Looped Variable", system-ui, sans-serif/);
+  for (const entry of ['main.js', 'misc-font.js']) {
+    assert.match(fs.readFileSync(__dirname + '/../src/' + entry, 'utf8'), /import '\.\/fonts\.css'/);
+  }
+  assert.match(html, /font-family:var\(--lab-font,system-ui\)/);
   assert.equal(patcherCopy.en.language, 'Page language');
   const {default: initSqlJs} = await import('sql.js');
   const catalog = new (await initSqlJs()).Database();

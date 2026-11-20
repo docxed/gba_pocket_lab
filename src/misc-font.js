@@ -1,4 +1,4 @@
-import '@fontsource-variable/noto-sans/wght.css';
+import './fonts.css';
 import { applyTheme, savedTheme } from './lib/theme.js';
 
 applyTheme(document.documentElement,

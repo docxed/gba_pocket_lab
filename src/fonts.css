@@ -1,0 +1,5 @@
+@import "@fontsource-variable/noto-sans-thai-looped";
+
+:root {
+  --lab-font: "Noto Sans Thai Looped Variable", system-ui, sans-serif;
+}

@@ -3,7 +3,7 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 
 :root {
-  font-family: "Noto Sans Variable", "Noto Sans", sans-serif;
+  font-family: var(--lab-font);
   color: var(--text);
   background: var(--page);
   color-scheme: light;

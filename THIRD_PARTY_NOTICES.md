@@ -5,7 +5,8 @@ The project [MIT license](LICENSE) applies to original project code. Third-party
 ## Software and fonts
 
 - [Vue](https://github.com/vuejs/core), [Vuetify](https://github.com/vuetifyjs/vuetify), [Vite](https://github.com/vitejs/vite), and [Tailwind CSS](https://github.com/tailwindlabs/tailwindcss).
-- [sql.js and SQLite](https://github.com/sql-js/sql.js), [Noto Sans](https://github.com/notofonts/latin-greek-cyrillic), and [Material Design Icons](https://github.com/Templarian/MaterialDesign-JS).
+- [sql.js and SQLite](https://github.com/sql-js/sql.js), and [Material Design Icons](https://github.com/Templarian/MaterialDesign-JS).
+- [Noto Sans Thai Looped](https://fontsource.org/fonts/noto-sans-thai-looped/about) is distributed under the [SIL Open Font License](public/licenses/noto-sans-thai-looped.txt).
 - Misc loads [Bootstrap 5.3.3](https://github.com/twbs/bootstrap/blob/v5.3.3/LICENSE) and [Tom Select 2.3.1](https://github.com/orchidjs/tom-select/blob/v2.3.1/LICENSE) from a CDN.
 
 ## Artwork

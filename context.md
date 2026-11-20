@@ -1,6 +1,6 @@
-# Project context — Poké Lab v0.40
+# Project context — Poké Lab v0.41
 
-The static app uses Vue, Vite, Vuetify, Tailwind, and bundled Noto Sans. The interface and source documentation are in English. Project communication uses Thai.
+The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Noto Sans Thai Looped as the first choice for UI text, with system fallbacks for missing glyphs. Project communication uses Thai, and source documentation is in English.
 
 ## Current architecture
 

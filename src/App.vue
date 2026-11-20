@@ -314,7 +314,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.40</span>
+      <span>v0.41</span>
     </footer>
   </v-app>
 </template>

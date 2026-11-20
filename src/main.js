@@ -10,7 +10,7 @@ import {
   mdiCheck, mdiChevronDown, mdiClose, mdiDotsHorizontal, mdiDownloadOutline, mdiFileCheckOutline,
   mdiFlaskOutline, mdiGamepadVariantOutline, mdiLockOutline, mdiMagnify, mdiTrayArrowUp, mdiWeatherNight, mdiWhiteBalanceSunny
 } from '@mdi/js';
-import '@fontsource-variable/noto-sans';
+import './fonts.css';
 import './style.css';
 import App from './App.vue';
 
