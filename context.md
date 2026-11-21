@@ -1,4 +1,4 @@
-# Project context — Poké Lab v0.50
+# Project context — Poké Lab v0.51
 
 The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Noto Sans Thai Looped as the first choice for UI text, with system fallbacks for missing glyphs. Project communication uses Thai, and source documentation is in English.
 
@@ -8,6 +8,7 @@ The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Not
 - The header logo animates a CSS Master Ball, Rare Candy sprites, gold coins, and a purple burst in a continuous 8-bit-style loop. Reduced motion displays a static arrangement. The favicon uses a static Lance portrait.
 - The Patcher hero layers six waves of Master Balls, Rare Candies, and gold coins over the original Lance artwork on a 5.6-second loop. A mask keeps the center clear and reduced motion hides the overlay.
 - A decorative shower of Rare Candy, Master Ball, and Relic Gold sprites plays over the interactive page for 1.8 seconds on each page load. The sprites are bundled locally, and the animation is skipped when reduced motion is enabled.
+- A successful patch and download trigger a one-shot burst of Rare Candy, Master Ball, and Relic Gold near the action button. The particles are decorative, ignore pointer input, and are hidden with reduced motion.
 - The `rom` query parameter follows the game selector and works with browser navigation. A change of game clears the selected file. The Misc view continues to use the URL fragment.
 - The Game selector uses Vuetify autocomplete to filter catalog names and build labels. Search ignores case and accents. The list shows cover art, supported builds, and the current selection.
 - The hint under the supported builds tells users to choose a ROM already patched to the selected hack version. The file chooser references the same hint for assistive technology.
@@ -36,6 +37,24 @@ Start local ROM investigations with `node tools/inspect-rom.mjs "<local ROM path
 - Use Node.js 20.19+ in the 20.x line or 22.12+. Run `npm ci` and `npm run dev` for local development.
 - Run `npm test` and `npm run build`, then `npm run preview` to check the static build. Pass supported local ROM paths to `node tests/regression.cjs` to verify output hashes.
 - Set GitHub Pages source to **GitHub Actions**. The workflow builds and publishes `dist/` when `main` receives a push or the workflow runs manually. After upload, it waits for the Pages artifact ID to appear in the current run before deploying.
+
+## Nintendo DS ROM workflow
+
+1. Identify the exact input by SHA-256, game code, revision, and size. Validate ARM9, FAT, and overlay bounds against the file. Use ndspy or a small read-only parser to map RAM addresses to ARM9 or overlay file offsets, and Capstone to decode instructions at the mapped address. Compare with the base game's source and prior verified build where available, then check the actual ROM bytes and call targets.
+2. If an overworld shortcut is approved, look for the normal field input call after the movement-allowed and map-mode checks. For Origin Heart Gold use held `L` and newly pressed `SELECT` from raw input, since the Options button mode can remap or hide processed shoulder buttons. Preserve the original input call and arguments on ordinary frames. On the shortcut frame, use the native wallet setter and bag routines, only add the difference up to 99, and play the existing selection sound as acknowledgment.
+3. Decode the SDK module parameters, ARM9 autoload list and footer. Validate existing load and BSS ranges, overlap with overlays, Thumb branch reach, and the erased file gap before the next section. For these two builds, copy the original autoload records in order after the payload, append a 12-byte record for the new ITCM destination, and move the footer. Update the module parameter list start/end, ARM9 size, secure-area CRC and header CRC. Avoid treating zero-filled bytes in autoload data as executable space at their original address.
+4. Write a separate local output and verify its hash, changed ranges, autoload records, branch decode, CRCs and unchanged original. In RetroArch with the melonDS core, test from a normal boot with a disposable or copied in-game save. The default keyboard shortcut is hold `Q` and tap `Right Shift`. `Enter` maps to Start. Check the balance, both bag pockets, repeated use, and that Select alone does not apply the cheat. Keep static checks separate from emulator results.
+
+### Origin Heart Gold prototype reference
+
+Both tested input layouts use game code `IPKJ`. The normal field call at `0x0203D900` targets `0x021E5BA4` in overlay 1. The 120-byte Thumb payload loads at ITCM `0x01FF9000` and preserves that call on frames without the shortcut. Raw input is at `0x021D0094`, with held keys at offset `0x38` and new keys at `0x3C`. Use save data from field-system offset `0x0C`. The profile getter is `0x0202933C`, the wallet setter is `0x020294B8` (cap 9,999,999), the bag getter is `0x02076E28`, quantity is `0x02076BC8` (heap 11), and add-item is `0x02076A08` (heap 4). The item NARC at `/a/0/1/7` has matching Master Ball (1) and Rare Candy (50) records across these builds. The sound routine is `0x02005F5C` with sound 1500. The module parameters sit at ROM offset `0x4BA0`. Thai and English have different autoload tables, so derive the insertion point and preserve each build's records.
+
+| Build | Input SHA-256 | Patched SHA-256 | Result |
+| --- | --- | --- | --- |
+| TH Nonplae v1.3 | `86eb90e5ff3949f927787bf115efc0fe8d1d8b94eba883bdb0ad9c375bb3a2ce` | `916015dacb09ff2bed00a6540402b3239209cf4f2a16d3fbe4f75b2994ed4e14` | User confirmed in RetroArch melonDS |
+| English v1.0.0-rc8 | `d0185cfa37f329f4236aafbaa671b3dbb49fcdc4d7094bc27e491dc2894cf87f` | `fec6688a7d948660614a136ddd873a2edc46a9c3ffed19f3e0be64585bdb4781` | User confirmed in RetroArch melonDS |
+
+Poké Lab v0.51 lists both exact builds under NDS and reproduces the emulator-tested prototype hashes locally in the browser. The GBA category keeps the existing GBA file handling.
 
 ## Radical Red 4.1 investigation
 

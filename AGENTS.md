@@ -15,3 +15,7 @@ A local ROM path plus a request to analyze it, make a cheat, and add it to the a
 2. Prefer **Start > Cheat** backed by the game's validated Debug callback. An explicit Wally Quest fallback authorizes a custom **Start > Cheat** action if no native Debug entry can be validated. Set money to 999,999 within the verified wallet limit, and top up Rare Candy and Master Ball to 99 each when the bag has room. Resolve limits and item IDs from the ROM and use its native wallet and bag routines. Ask before adding custom effects beyond that request. If the custom action cannot be validated, report the blocker.
 3. Run `node tools/inspect-rom.mjs "<local ROM path>" --at 0x08XXXXXX` with an aligned candidate address for a short Thumb decode. Use a disassembler when more instructions or context are needed. See `src/lib/soulgold.js`, `src/lib/crest.js`, and `src/lib/unbound.js` for native Debug shortcuts, and `src/lib/wally-quest.js`, `src/lib/theta-emerald.js`, and `src/lib/emerald-cheat.js` for custom actions.
 4. Add the supported build and note to `src/data/catalog.sql`, wire up the patcher in `src/App.vue`, and cover the output in `tests/regression.cjs`. Run the tests and build, check the browser output, and verify the action in mGBA on a separate ROM copy when possible.
+
+## Nintendo DS ROM workflow
+
+For a local `.nds` request, use the [NDS workflow in context.md](context.md#nintendo-ds-rom-workflow). The GBA inspector and its 32 MiB input handling are specific to GBA. Keep NDS prototypes as separate local ROM copies until browser integration is requested.

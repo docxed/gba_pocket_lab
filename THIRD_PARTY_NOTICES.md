@@ -16,3 +16,4 @@ The project [MIT license](LICENSE) applies to original project code. Third-party
 - The Heart & Soul Legends thumbnail uses the [title-screen image supplied by the user](https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTMwDcoH8Hp3yjsX8yv3knCQUXnfx81pjszA3aP8dZqY09Bdyr7).
 - The project owner generated the Lance fan-art banner using AI.
 - Item rain and optional item icons use [PokeAPI Sprites](https://github.com/PokeAPI/sprites).
+- The Origin Heart Gold thumbnail uses the [image supplied by the user](https://i.redd.it/ro9j0irft8sh1.jpeg).

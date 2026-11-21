@@ -4,6 +4,7 @@ import { crestPatch, patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
 import { nationalDexPatch, patchNationalDex } from './lib/national-dex.js';
+import { patchOriginHeartGold } from './lib/origin-heart-gold.js';
 import { patchHnsLegends } from './lib/hns-legends.js';
 import { patchG3e } from './lib/g3e.js';
 import { patchThetaEmerald } from './lib/theta-emerald.js';
@@ -12,6 +13,7 @@ import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold } from './lib/soulgold.js';
 import { readGbaRom } from './lib/rom-file.js';
 import ItemRain from './ItemRain.vue';
+import PatchBurst from './PatchBurst.vue';
 import BannerJackpot from './BannerJackpot.vue';
 import JackpotLogo from './JackpotLogo.vue';
 import { applyTheme, savedTheme, saveTheme } from './lib/theme.js';
@@ -30,22 +32,28 @@ const patchers = {
   'theta-emerald': patchThetaEmerald,
   'generation-3-evolved': patchG3e,
   'national-dex': patchNationalDex,
-  'hns-legends': patchHnsLegends
+  'hns-legends': patchHnsLegends,
+  'origin-heart-gold': patchOriginHeartGold
 };
 const romSizes = {
   'emerald-crest': crestPatch.sourceSize,
   'national-dex': nationalDexPatch.sourceSize
 };
 const game = computed(() => games.value.find(option => option.id === selectedGame.value));
+const platform = computed(() => game.value?.platform ?? 'GBA');
+const platformGames = computed(() => games.value.filter(option => option.platform === platform.value));
 const fileInput = ref();
 const file = shallowRef(null);
 const drag = ref(false);
 const busy = ref(false);
+const patchBurst = ref(0);
 const status = ref('');
 const statusDetail = ref('');
 const failed = ref(false);
 const language = ref(patcherLanguage());
 const copy = computed(() => patcherCopy[language.value]);
+const menuHint = computed(() => language.value === 'th' ? game.value?.menuHintTh ?? game.value?.menuHint : game.value?.menuHint);
+const romHint = computed(() => platform.value === 'NDS' ? copy.value.ndsRomHint : copy.value.romHint);
 const miscOpened = ref(page.value === 'misc');
 const miscFrame = ref();
 const miscHeight = ref(670);
@@ -107,6 +115,7 @@ function syncRoute() {
   if (!next) return;
   if (selectedGame.value !== next.id) {
     selectedGame.value = next.id;
+    gameSearch.value = '';
     removeFile();
   }
   if (requested !== next.id) {
@@ -121,6 +130,11 @@ function chooseGame(id) {
   url.searchParams.set('rom', id);
   history.pushState(history.state, '', url);
   syncRoute();
+}
+
+function choosePlatform(next) {
+  const firstGame = games.value.find(option => option.platform === next);
+  if (firstGame && next !== platform.value) chooseGame(firstGame.id);
 }
 
 function openPage(next) {
@@ -168,12 +182,11 @@ async function download() {
   const patcher = patchers[gameId];
   if (!file.value || !patcher || busy.value) return;
   const input = file.value;
-  const menuHint = game.value.menuHint;
   busy.value = true;
   failed.value = false;
   status.value = 'patching';
   try {
-    const rom = await readGbaRom(input, romSizes[gameId]);
+    const rom = platform.value === 'NDS' ? input : await readGbaRom(input, romSizes[gameId]);
     const { output, verified, filename } = await patcher(rom);
     if (file.value !== input) return;
     const url = URL.createObjectURL(new Blob([output], { type: 'application/octet-stream' }));
@@ -185,8 +198,9 @@ async function download() {
     link.click();
     link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1500);
-    statusDetail.value = menuHint;
+    statusDetail.value = menuHint.value;
     status.value = verified ? 'success' : 'untested';
+    patchBurst.value++;
   } catch (error) {
     if (file.value === input) {
       failed.value = true;
@@ -228,7 +242,8 @@ async function download() {
           <BannerJackpot v-if="page === 'patch'" />
           <div class="patch-hero-copy">
             <h1 id="patch-heading" class="page-heading">ROM Patcher</h1>
-            <p v-if="game?.id === 'wally-quest'" class="patch-intro"><strong>Max Cheats</strong> fills your wallet and tops up Rare Candies and Master Balls.</p>
+            <p v-if="platform === 'NDS'" class="patch-intro">Add a <strong>Cheat</strong> shortcut to the overworld.</p>
+            <p v-else-if="game?.id === 'wally-quest'" class="patch-intro"><strong>Max Cheats</strong> fills your wallet and tops up Rare Candies and Master Balls.</p>
             <p v-else class="patch-intro">Add <strong>Cheat</strong> to the game's Start menu.</p>
           </div>
         </div>
@@ -247,8 +262,14 @@ async function download() {
                   </button>
                 </div>
               </div>
+              <div class="mb-3 flex gap-2" role="group" :aria-label="copy.platform">
+                <v-btn v-for="option in ['GBA', 'NDS']" :key="option" size="small"
+                  :variant="platform === option ? 'flat' : 'outlined'" color="primary"
+                  :aria-pressed="platform === option" :disabled="!games.length || busy"
+                  @click="choosePlatform(option)">{{ option }}</v-btn>
+              </div>
               <v-autocomplete
-                id="game-select" :model-value="selectedGame" @update:model-value="chooseGame" :items="games" item-title="name" item-value="id"
+                id="game-select" :model-value="selectedGame" @update:model-value="chooseGame" :items="platformGames" item-title="name" item-value="id"
                 v-model:search="gameSearch"
                 :filter-keys="['title', 'raw.builds']" ignore-accents auto-select-first
                 :disabled="!games.length || busy" variant="outlined" density="comfortable" hide-details
@@ -281,7 +302,7 @@ async function download() {
               <ul v-if="game" class="build-list flex flex-wrap gap-2" :aria-label="copy.builds">
                 <li v-for="build in game.builds" :key="build" lang="en">{{ build }}</li>
               </ul>
-              <p v-if="game" id="rom-build-hint" class="rom-build-hint">{{ copy.romHint }}</p>
+              <p v-if="game" id="rom-build-hint" class="rom-build-hint">{{ romHint }}</p>
             </div>
 
             <div class="rom-field">
@@ -292,7 +313,7 @@ async function download() {
                   <span class="file-icon"><v-icon :icon="file ? '$labFile' : '$labUpload'" size="23" /></span>
                   <span class="file-copy">
                     <strong>{{ file ? file.name : copy.choose }}</strong>
-                    <small>{{ file ? copy.replace : copy.fileType }}</small>
+                    <small>{{ file ? copy.replace : platform === 'NDS' ? copy.ndsFileType : copy.fileType }}</small>
                   </span>
                 </button>
                 <v-btn v-if="file" icon="$labClose" :aria-label="copy.remove" variant="text" density="comfortable" :disabled="busy" @click="removeFile" />
@@ -301,19 +322,22 @@ async function download() {
           </div>
 
           <div v-if="game" class="patch-note">
-            <strong lang="en">{{ game.menuHint }}</strong>
+            <strong>{{ menuHint }}</strong>
             <p>{{ game.patchNotes[language] }}</p>
           </div>
 
           <div class="patch-actions flex flex-wrap items-center justify-between gap-4">
             <span class="privacy flex items-center gap-2"><v-icon icon="$labLock" size="17" /> {{ copy.privacy }}</span>
-            <v-btn
-              class="patch-button" color="primary" variant="flat" prepend-icon="$labDownload"
-              :loading="busy" :disabled="!file || !patchers[selectedGame]" @click="download"
-            >{{ copy.patch }}</v-btn>
+            <div class="patch-button-wrap">
+              <v-btn
+                class="patch-button" color="primary" variant="flat" prepend-icon="$labDownload"
+                :loading="busy" :disabled="!file || !patchers[selectedGame]" @click="download"
+              >{{ copy.patch }}</v-btn>
+              <PatchBurst v-if="status === 'success' || status === 'untested'" :key="patchBurst" />
+            </div>
           </div>
           <p v-if="status" class="feedback" :class="{ error: failed }" :role="failed ? 'alert' : 'status'">
-            <template v-if="status === 'success' || status === 'untested'">{{ copy.success }} <span lang="en">{{ statusDetail }}</span>.<template v-if="status === 'untested'"> {{ copy.untested }}</template></template>
+            <template v-if="status === 'success' || status === 'untested'">{{ platform === 'NDS' ? copy.ndsSuccess : copy.success }} <span>{{ statusDetail }}</span>.<template v-if="status === 'untested'"> {{ copy.untested }}</template></template>
             <template v-else-if="status === 'patchError'"><span v-if="language === 'th'">{{ copy.patchError }} </span><span lang="en">{{ statusDetail }}</span></template>
             <template v-else>{{ copy[status] }}</template>
           </p>
@@ -337,7 +361,7 @@ async function download() {
         <a class="footer-support-link" href="https://easydonate.app/docxed" rel="noreferrer">{{ copy.supportProject }}</a>
         <p>{{ copy.supportFeedback }}</p>
       </div>
-      <span>v0.50</span>
+      <span>v0.51</span>
     </footer>
   </v-app>
 </template>

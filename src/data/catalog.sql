@@ -3,11 +3,13 @@ CREATE TABLE games (
   name TEXT NOT NULL,
   cover TEXT NOT NULL,
   menu_hint TEXT NOT NULL,
+  menu_hint_th TEXT,
   patch_note TEXT NOT NULL,
   patch_note_th TEXT NOT NULL,
   sort_order INTEGER NOT NULL,
   description TEXT,
   description_th TEXT,
+  platform TEXT NOT NULL DEFAULT 'GBA' CHECK (platform IN ('GBA', 'NDS')),
   project_url TEXT
 );
 
@@ -34,6 +36,9 @@ SET description = 'An Emerald ROM hack that makes all 386 Pokémon obtainable an
     project_url = 'https://www.romhacking.net/hacks/1991/'
 WHERE id = 'national-dex';
 
+INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_order, platform, menu_hint_th) VALUES
+  ('origin-heart-gold', 'Pokémon Origin Heart Gold', 'covers/origin-heart-gold.webp', 'Hold L and tap SELECT while walking', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 10, 'NDS', 'กด L ค้างแล้วแตะ SELECT ตอนเดินในฉาก');
+
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),
@@ -46,4 +51,6 @@ INSERT INTO builds VALUES
   ('generation-3-evolved', 1, 'v1.0.26'),
   ('national-dex', 1, 'Standard'),
   ('national-dex', 2, 'Lite'),
-  ('hns-legends', 1, 'M9.8');
+  ('hns-legends', 1, 'M9.8'),
+  ('origin-heart-gold', 1, 'English v1.0.0-rc8'),
+  ('origin-heart-gold', 2, 'TH Nonplae v1.3');

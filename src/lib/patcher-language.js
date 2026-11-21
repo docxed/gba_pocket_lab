@@ -23,6 +23,10 @@ export const patcherCopy = {
   en: {
     language: 'Page language',
     game: 'Game',
+    platform: 'Platform',
+    ndsRomHint: 'Use a .nds file already patched to one of these ROM hack versions.',
+    ndsFileType: '.nds file',
+    ndsSuccess: 'Patched. Open the new ROM.',
     search: 'Search games or versions',
     noGames: 'No matching games',
     builds: 'Supported builds',
@@ -47,6 +51,10 @@ export const patcherCopy = {
   th: {
     language: 'ภาษาหน้าเว็บ',
     game: 'เกม',
+    platform: 'เครื่องเกม',
+    ndsRomHint: 'ใช้ไฟล์ .nds ของ ROM แฮ็กตามเวอร์ชันที่แสดงด้านบน',
+    ndsFileType: 'ไฟล์ .nds',
+    ndsSuccess: 'แพตช์สำเร็จ เปิด ROM ใหม่แล้วใช้ทางลัด',
     search: 'ค้นหาเกมหรือเวอร์ชัน',
     noGames: 'ไม่พบเกมที่ตรงกัน',
     builds: 'เวอร์ชันที่รองรับ',

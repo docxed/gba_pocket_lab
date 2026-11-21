@@ -204,6 +204,7 @@
 .patch-actions { padding-top: 21px; margin-top: 22px; border-top: 1px solid var(--separator); }
 .privacy { color: var(--subtle); font-size: 12px; font-weight: 650; }
 .privacy .v-icon { color: var(--purple); }
+.patch-button-wrap { position: relative; }
 .patch-button.v-btn { border-radius: 11px; min-height: 45px; padding-inline: 19px; font-size: 14px; text-transform: none; letter-spacing: 0; font-weight: 800; }
 .feedback { margin: 17px 0 0; padding: 11px 13px; border-radius: 10px; background: var(--highlight-bg); color: var(--note-text); font-size: 13px; font-weight: 650; }
 .feedback.error { background: var(--error-bg); color: var(--error-text); }
@@ -230,5 +231,5 @@
   .site-tabs .v-tab { min-width: 0; padding-inline: 9px; font-size: 12px; }
   .site-tabs .v-tab .v-btn__prepend { display: none; }
   .patch-card { margin-top: 17px; padding: 17px; border-radius: 17px; }
-  .patch-actions .v-btn { width: 100%; }
+  .patch-button-wrap, .patch-button-wrap .v-btn { width: 100%; }
 }

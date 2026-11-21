@@ -116,7 +116,11 @@ async function main() {
   try {
     catalog.run(fs.readFileSync(__dirname + '/../src/data/catalog.sql', 'utf8'));
     const [notes] = catalog.exec('SELECT patch_note, patch_note_th FROM games ORDER BY sort_order');
-    assert.equal(notes.values.length, 9);
+    assert.equal(notes.values.length, 10);
+    const [platforms] = catalog.exec('SELECT platform, COUNT(*) FROM games GROUP BY platform ORDER BY platform');
+    assert.deepEqual(platforms.values, [['GBA', 9], ['NDS', 1]]);
+    const [origin] = catalog.exec("SELECT platform, b.name, g.menu_hint_th FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'origin-heart-gold' ORDER BY b.sort_order");
+    assert.deepEqual(origin.values, [['NDS', 'English v1.0.0-rc8', 'กด L ค้างแล้วแตะ SELECT ตอนเดินในฉาก'], ['NDS', 'TH Nonplae v1.3', 'กด L ค้างแล้วแตะ SELECT ตอนเดินในฉาก']]);
     const [hns] = catalog.exec("SELECT g.menu_hint, b.name, g.cover FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'hns-legends'");
     assert.deepEqual(hns.values, [['Start > Cheat', 'M9.8', 'covers/hns-legends.webp']]);
     const [nationalDex] = catalog.exec("SELECT g.menu_hint, b.name FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'national-dex' ORDER BY b.sort_order");
@@ -147,7 +151,7 @@ async function main() {
   assert.match(patcherPage, /<meta name="referrer" content="no-referrer">/);
 
   const patcherView = fs.readFileSync(__dirname + '/../src/App.vue', 'utf8');
-  assert.match(patcherView, /<\/ul>\s*<p v-if="game" id="rom-build-hint"[^>]*>{{ copy\.romHint }}<\/p>/);
+  assert.match(patcherView, /<\/ul>\s*<p v-if="game" id="rom-build-hint"[^>]*>{{ romHint }}<\/p>/);
   assert.match(patcherView, /:aria-describedby="game \? 'rom-build-hint' : undefined"/);
   const footer = patcherView.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1] ?? '';
   assert.match(footer, /<div :lang="language">\s*<a\b[^>]*href="https:\/\/easydonate\.app\/docxed"[^>]*>{{ copy\.supportProject }}<\/a>\s*<p>{{ copy\.supportFeedback }}<\/p>/);
@@ -281,7 +285,24 @@ async function main() {
     ['01a6af0953a68732579360988edd3338e5b24d2e48248f3239e851adf2557b31', { target: 'ace9e07650a857ff928dec1ebbaa23f7cfe9fa8cb387da655132e1e72c20e134' }],
     ['338f3bb39f3b315aaa6c3e358c0812c1a4e1e0f70e6d9e10f7ef857e9f5dde2f', { game: megaGame, target: '0033c4412a6926ac3b2a08b134102963af208e4a715ebabede707fbdadf4747d' }]
   ]);
+  const {patchOriginHeartGold, originHeartGoldBuilds} = await import('../src/lib/origin-heart-gold.js');
+  await assert.rejects(patchOriginHeartGold(new Blob([new Uint8Array(192)])), /unpatched Origin Heart Gold/);
+
   for (const file of process.argv.slice(2)) {
+    if (originHeartGoldBuilds.some(build => build.size === fs.statSync(file).size)) {
+      const rom = await fs.openAsBlob(file);
+      const {output, verified, filename} = await patchOriginHeartGold(rom);
+      const digest = createHash('sha256').update(output).digest('hex');
+      const build = originHeartGoldBuilds.find(candidate => candidate.target === digest);
+      assert.ok(build);
+      assert.equal(output.length, rom.size);
+      assert.equal(verified, true);
+      assert.equal(filename, `Pokemon Origin Heart Gold ${build.name}-Cheat.nds`);
+      const originalHook = new DataView(await rom.slice(0x41900, 0x41904).arrayBuffer());
+      assert.equal(originalHook.getUint32(0, true), 0xf950f1a8);
+      console.log('Applied the Origin Heart Gold patch for ' + build.name);
+      continue;
+    }
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);

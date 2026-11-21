@@ -1,11 +1,14 @@
-# Poké Lab v0.50
+# Poké Lab v0.51
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 
 In Patcher, type a game name or build version into the Game selector to narrow the list.
-Use a `.gba` file already patched to one of the ROM hack versions shown under the selector.
+Choose **GBA** or **NDS**, then select a game. Use a ROM already patched to one of the listed hack versions.
+
+For Origin Heart Gold (English v1.0.0-rc8 or TH Nonplae v1.3), hold **L** and tap **SELECT** while walking. In RetroArch with default keyboard bindings, hold **Q** and tap **Right Shift**. The shortcut sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each when the bag has room.
 The patcher checks the file contents and accepts ROM dumps with uniform padding after the cartridge data.
 The looping 8-bit-style header logo features a Master Ball, Rare Candy, and gold coins. Reduced motion keeps it still.
+A successful patch plays a short burst of Rare Candies, Master Balls, and coins around the download button. Reduced motion hides the burst.
 The Lance banner keeps the original artwork in place while six waves of item sprites and aura effects loop around it.
 Use the theme button in the header to switch between light and dark mode.
 Use the page language flags in Patcher to switch the main controls, cheat notes, and feedback between English and Thai.

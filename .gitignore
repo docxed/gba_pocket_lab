@@ -3,6 +3,8 @@ ROM.lnk
 node_modules/
 dist/
 *.gba
+*.nds
+*.dsv
 *.sav
 *.bin
 *.dmp
