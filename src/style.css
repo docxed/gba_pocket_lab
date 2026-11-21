@@ -93,11 +93,6 @@
 .site-header > div { min-height: 78px; }
 .wordmark { color: var(--text); font-weight: 850; font-size: 24px; text-decoration: none; letter-spacing: -.07em; white-space: nowrap; }
 .wordmark-lab { color: var(--purple); }
-.logo {
-  display: grid; place-items: center; width: 42px; height: 42px; color: #fff; border-radius: 13px;
-  background: linear-gradient(145deg, #5003c0, var(--magenta));
-  box-shadow: 0 5px 12px #5003c02b;
-}
 .header-tools { display: flex; align-items: center; gap: 8px; }
 .theme-toggle.v-btn { width: 40px; height: 40px; color: var(--purple); }
 .site-tabs { --v-tabs-height: 44px; }
@@ -231,7 +226,6 @@
   .header-tools { gap: 3px; }
   .theme-toggle.v-btn { width: 36px; height: 36px; }
   .wordmark { font-size: 20px; }
-  .logo { width: 36px; height: 36px; }
   .site-tabs .v-tab { min-width: 0; padding-inline: 9px; font-size: 12px; }
   .site-tabs .v-tab .v-btn__prepend { display: none; }
   .patch-card { margin-top: 17px; padding: 17px; border-radius: 17px; }

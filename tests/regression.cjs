@@ -25,6 +25,13 @@ function element() {
 }
 
 async function main() {
+  const logo = fs.readFileSync(join(__dirname, '../public/favicon.png'));
+  assert.equal(logo.subarray(1, 4).toString(), 'PNG');
+  assert.deepEqual([logo.readUInt32BE(16), logo.readUInt32BE(20)], [48, 48]);
+  for (const entry of ['index.html', 'misc.html']) {
+    assert.match(fs.readFileSync(join(__dirname, '..', entry), 'utf8'), /rel="icon"[^>]+href="\/favicon\.png"/);
+  }
+
   const fixtureDir = fs.mkdtempSync(join(tmpdir(), 'poke-lab-inspect-'));
   const fixture = join(fixtureDir, 'Test ROM.gba');
   const rom = Buffer.alloc(512);

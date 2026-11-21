@@ -11,6 +11,7 @@ import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold } from './lib/soulgold.js';
 import { readGbaRom } from './lib/rom-file.js';
 import ItemRain from './ItemRain.vue';
+import JackpotLogo from './JackpotLogo.vue';
 import { applyTheme, savedTheme, saveTheme } from './lib/theme.js';
 import { patcherCopy, patcherLanguage, savePatcherLanguage } from './lib/patcher-language.js';
 
@@ -201,7 +202,7 @@ async function download() {
     <header class="site-header">
       <div class="shell flex items-center justify-between gap-4">
         <a class="wordmark flex items-center gap-3" href="#patch" aria-label="Poke Lab home" @click.prevent="openPage('patch')">
-          <span class="logo" aria-hidden="true"><v-icon icon="$labFlask" size="23" /></span>
+          <JackpotLogo />
           <span>Poké<span class="wordmark-lab"> Lab</span></span>
         </a>
         <div class="header-tools">
@@ -328,7 +329,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.45</span>
+      <span>v0.46</span>
     </footer>
   </v-app>
 </template>

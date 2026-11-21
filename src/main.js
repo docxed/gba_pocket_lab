@@ -8,7 +8,7 @@ import 'vuetify/styles';
 import { aliases, mdi } from 'vuetify/iconsets/mdi-svg';
 import {
   mdiCheck, mdiChevronDown, mdiClose, mdiDotsHorizontal, mdiDownloadOutline, mdiFileCheckOutline,
-  mdiFlaskOutline, mdiGamepadVariantOutline, mdiLockOutline, mdiMagnify, mdiTrayArrowUp, mdiWeatherNight, mdiWhiteBalanceSunny
+  mdiGamepadVariantOutline, mdiLockOutline, mdiMagnify, mdiTrayArrowUp, mdiWeatherNight, mdiWhiteBalanceSunny
 } from '@mdi/js';
 import './fonts.css';
 import './style.css';
@@ -24,7 +24,7 @@ const vuetify = createVuetify({
     sets: { mdi },
     aliases: {
       ...aliases,
-      labFlask: mdiFlaskOutline, labGamepad: mdiGamepadVariantOutline, labMisc: mdiDotsHorizontal,
+      labGamepad: mdiGamepadVariantOutline, labMisc: mdiDotsHorizontal,
       labChevron: mdiChevronDown, labFile: mdiFileCheckOutline, labUpload: mdiTrayArrowUp,
       labClose: mdiClose, labLock: mdiLockOutline, labDownload: mdiDownloadOutline,
       labSearch: mdiMagnify, labCheck: mdiCheck, labMoon: mdiWeatherNight, labSun: mdiWhiteBalanceSunny
