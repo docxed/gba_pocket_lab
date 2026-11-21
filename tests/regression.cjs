@@ -116,7 +116,9 @@ async function main() {
   try {
     catalog.run(fs.readFileSync(__dirname + '/../src/data/catalog.sql', 'utf8'));
     const [notes] = catalog.exec('SELECT patch_note, patch_note_th FROM games ORDER BY sort_order');
-    assert.equal(notes.values.length, 8);
+    assert.equal(notes.values.length, 9);
+    const [hns] = catalog.exec("SELECT g.menu_hint, b.name, g.cover FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'hns-legends'");
+    assert.deepEqual(hns.values, [['Start > Cheat', 'M9.8', 'covers/hns-legends.webp']]);
     const [nationalDex] = catalog.exec("SELECT g.menu_hint, b.name FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'national-dex' ORDER BY b.sort_order");
     assert.deepEqual(nationalDex.values, [['Start > Cheat', 'Standard'], ['Start > Cheat', 'Lite']]);
     const [details] = catalog.exec('SELECT id, description, description_th, project_url FROM games WHERE description IS NOT NULL OR description_th IS NOT NULL OR project_url IS NOT NULL');
@@ -248,6 +250,8 @@ async function main() {
   const {patchThetaEmerald, thetaEmeraldPatch} = await import('../src/lib/theta-emerald.js');
   await assert.rejects(patchUnbound(new Uint8Array(192)), /Choose Pok.*Unbound/);
   await assert.rejects(patchThetaEmerald(emeraldHeaderOnly), /unpatched Pok.*Theta Emerald/);
+  const {patchHnsLegends, hnsLegendsPatch} = await import('../src/lib/hns-legends.js');
+  await assert.rejects(patchHnsLegends(emeraldHeaderOnly), /unpatched Heart & Soul Legends/);
   const {patchG3e, g3ePatch} = await import('../src/lib/g3e.js');
   await assert.rejects(patchG3e(new Uint8Array(192)), /unpatched Generation 3 Evolved/);
   const unsupportedEmerald = new Uint8Array(32 * 1024 * 1024);
@@ -293,6 +297,20 @@ async function main() {
       assert.equal(hash((await patchNationalDex(padded)).output), hash(output));
       await assert.rejects(patchNationalDex(output), /unpatched Pok.*Complete National Dex Edition/);
       console.log('Applied the Complete National Dex Edition Start > Cheat patch for ' + file);
+      continue;
+    }
+    if (before === hnsLegendsPatch.source) {
+      const {output, verified, filename} = await patchHnsLegends(input);
+      assert.equal(filename, 'Pokemon Heart and Soul Legends M9.8-Cheat.gba');
+      assert.equal(verified, true);
+      assert.equal(hash(output), '0eb5b1e828771827b8adfc490cd1c7546c31726a265338d6452fcc6924aa6e32');
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      assert.equal(output.length, input.length);
+      const patched = new DataView(output.buffer, output.byteOffset, output.byteLength);
+      assert.equal(patched.getUint32(0xe65ef4, true), 0x082b9539);
+      assert.deepEqual(output.subarray(0x2b9538, 0x2b95c4), input.subarray(0x2b9538, 0x2b95c4));
+      await assert.rejects(patchHnsLegends(output), /unpatched Heart & Soul Legends/);
+      console.log('Applied the Heart & Soul Legends M9.8 Start > Cheat patch for ' + file);
       continue;
     }
     if (before === g3ePatch.source) {

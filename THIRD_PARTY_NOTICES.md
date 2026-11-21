@@ -13,5 +13,6 @@ The project [MIT license](LICENSE) applies to original project code. Third-party
 
 - Cover thumbnails from [SoulGold](https://pokemonsoulgold.com/images/game/title-screen-full.webp), [SoulGold MegaXtream](https://files.catbox.moe/dy8g1k.jpg), [Unbound](https://i.redd.it/hpkaeas6vaqc1.png), [Emerald Crest by ThatSimpleDev](https://thatsimpledev.itch.io/emerald-crest), and [Wally Quest](https://www.pokeharbor.com/wp-content/uploads/2022/10/Pokemon-Wally-Quest.png). The [Theta Emerald: The Last Dance](https://www.pokecommunity.com/threads/pok%C3%A9mon-theta-emerald-the-last-dance.502646/) thumbnail is a title-screen capture.
 - The Complete National Dex Edition thumbnail uses the [Pokémon Emerald title screen](https://retrohackers.net/translations/gba/images/titles/1912titlescreen.png) listed by [Retro Hackers](https://retrohackers.net/hack-details.php?id=1991).
+- The Heart & Soul Legends thumbnail uses the [title-screen image supplied by the user](https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcTMwDcoH8Hp3yjsX8yv3knCQUXnfx81pjszA3aP8dZqY09Bdyr7).
 - The project owner generated the Lance fan-art banner using AI.
 - Item rain and optional item icons use [PokeAPI Sprites](https://github.com/PokeAPI/sprites).

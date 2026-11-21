@@ -1,4 +1,4 @@
-# Poké Lab v0.49
+# Poké Lab v0.50
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 
@@ -21,6 +21,8 @@ In Pokémon Generation 3 Evolved v1.0.26, the patcher adds **Start > Cheat** aft
 The Pokémon Emerald: Complete National Dex Edition catalog entry includes a short game description and a project-page link in English and Thai.
 
 In Pokémon Emerald: Complete National Dex Edition (Standard or Lite), **Start > Cheat** sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room. Both builds pass static checks. The user confirmed that Start > Cheat works in an emulator.
+
+In Pokémon Heart & Soul Legends M9.8, **Start > Cheat** appears before **Exit** in the normal field menu and opens the game’s Debug menu. The supplied ROM passed static checks. The user confirmed that Start > Cheat works in mGBA.
 
 For local ROM analysis, run `node tools/inspect-rom.mjs "<local ROM path>"` and follow the [new ROM workflow](AGENTS.md#new-rom-workflow).
 

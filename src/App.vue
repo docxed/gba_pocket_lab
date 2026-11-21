@@ -4,6 +4,7 @@ import { crestPatch, patchCrest } from './lib/crest.js';
 import { patchWallyQuest } from './lib/wally-quest.js';
 import { patchUnbound } from './lib/unbound.js';
 import { nationalDexPatch, patchNationalDex } from './lib/national-dex.js';
+import { patchHnsLegends } from './lib/hns-legends.js';
 import { patchG3e } from './lib/g3e.js';
 import { patchThetaEmerald } from './lib/theta-emerald.js';
 import patcherBanner from './assets/patcher-banner.webp';
@@ -28,7 +29,8 @@ const patchers = {
   unbound: patchUnbound,
   'theta-emerald': patchThetaEmerald,
   'generation-3-evolved': patchG3e,
-  'national-dex': patchNationalDex
+  'national-dex': patchNationalDex,
+  'hns-legends': patchHnsLegends
 };
 const romSizes = {
   'emerald-crest': crestPatch.sourceSize,
@@ -335,7 +337,7 @@ async function download() {
         <a class="footer-support-link" href="https://easydonate.app/docxed" rel="noreferrer">{{ copy.supportProject }}</a>
         <p>{{ copy.supportFeedback }}</p>
       </div>
-      <span>v0.49</span>
+      <span>v0.50</span>
     </footer>
   </v-app>
 </template>

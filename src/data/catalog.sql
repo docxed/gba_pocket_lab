@@ -26,7 +26,8 @@ INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_o
   ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Cheat is the rightmost icon in Start.', 'Cheat คือไอคอนขวาสุดของเมนู Start', 5),
   ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6),
   ('generation-3-evolved', 'Pokémon Generation 3 Evolved', 'covers/generation-3-evolved.png', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 7),
-  ('national-dex', 'Pokémon Emerald: Complete National Dex Edition', 'covers/national-dex.png', 'Start > Cheat', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 8);
+  ('national-dex', 'Pokémon Emerald: Complete National Dex Edition', 'covers/national-dex.png', 'Start > Cheat', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 8),
+  ('hns-legends', 'Pokémon Heart & Soul Legends', 'covers/hns-legends.webp', 'Start > Cheat', 'Opens the game’s Debug menu.', 'เปิดเมนู Debug ของเกม', 9);
 UPDATE games
 SET description = 'An Emerald ROM hack that makes all 386 Pokémon obtainable and keeps the difficulty close to the original.',
     description_th = 'ROM แฮ็กของ Pokémon Emerald ที่ให้คุณหาโปเกมอนได้ครบทั้ง 386 ตัว โดยมีความยากใกล้เคียงกับเกมต้นฉบับ',
@@ -44,4 +45,5 @@ INSERT INTO builds VALUES
   ('theta-emerald', 1, 'The Last Dance (Completo)'),
   ('generation-3-evolved', 1, 'v1.0.26'),
   ('national-dex', 1, 'Standard'),
-  ('national-dex', 2, 'Lite');
+  ('national-dex', 2, 'Lite'),
+  ('hns-legends', 1, 'M9.8');
