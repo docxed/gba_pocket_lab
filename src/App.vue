@@ -269,6 +269,10 @@ async function download() {
                   <div class="game-menu-empty" :lang="language">{{ copy.noGames }}</div>
                 </template>
               </v-autocomplete>
+              <p v-if="game?.description" class="game-description" lang="en">
+                {{ game.description }}
+                <a v-if="game.projectUrl" :href="game.projectUrl" target="_blank" rel="noopener noreferrer">Project page</a>
+              </p>
               <ul v-if="game" class="build-list flex flex-wrap gap-2" :aria-label="copy.builds">
                 <li v-for="build in game.builds" :key="build" lang="en">{{ build }}</li>
               </ul>
@@ -324,7 +328,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.44</span>
+      <span>v0.45</span>
     </footer>
   </v-app>
 </template>

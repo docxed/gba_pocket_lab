@@ -189,6 +189,8 @@
 .game-menu-empty { padding: 13px 10px; color: var(--secondary-text); font-size: 14px; }
 .build-list { padding: 0; margin-top: 11px; list-style: none; }
 .build-list li { border-radius: 7px; background: var(--highlight-bg); color: var(--highlight-text); font-size: 12px; font-weight: 700; padding: 4px 8px; }
+.game-description { margin: 8px 0 0; font-size: 13px; }
+.game-description a { color: rgb(var(--v-theme-primary)); text-decoration: underline; }
 .rom-build-hint { margin: 6px 0 0; color: var(--subtle); font-size: 12px; }
 .dropzone {
   display: flex; align-items: center; gap: 4px; padding-right: 8px; min-height: 89px;

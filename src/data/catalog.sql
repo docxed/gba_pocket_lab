@@ -5,7 +5,9 @@ CREATE TABLE games (
   menu_hint TEXT NOT NULL,
   patch_note TEXT NOT NULL,
   patch_note_th TEXT NOT NULL,
-  sort_order INTEGER NOT NULL
+  sort_order INTEGER NOT NULL,
+  description TEXT,
+  project_url TEXT
 );
 
 CREATE TABLE builds (
@@ -15,7 +17,7 @@ CREATE TABLE builds (
   PRIMARY KEY (game_id, sort_order)
 );
 
-INSERT INTO games VALUES
+INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_order) VALUES
   ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 1),
   ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 2),
   ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Press Right in Start to find CHEAT.', 'กดขวาในเมนู Start เพื่อไปที่ CHEAT', 3),
@@ -24,6 +26,11 @@ INSERT INTO games VALUES
   ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6),
   ('generation-3-evolved', 'Pokémon Generation 3 Evolved', 'covers/generation-3-evolved.png', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 7),
   ('national-dex', 'Pokémon Emerald: Complete National Dex Edition', 'covers/national-dex.png', 'Start > Cheat', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 8);
+UPDATE games
+SET description = 'An Emerald ROM hack that makes all 386 Pokémon obtainable and keeps the difficulty close to the original.',
+    project_url = 'https://www.romhacking.net/hacks/1991/'
+WHERE id = 'national-dex';
+
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),

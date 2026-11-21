@@ -106,6 +106,11 @@ async function main() {
     assert.equal(notes.values.length, 8);
     const [nationalDex] = catalog.exec("SELECT g.menu_hint, b.name FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'national-dex' ORDER BY b.sort_order");
     assert.deepEqual(nationalDex.values, [['Start > Cheat', 'Standard'], ['Start > Cheat', 'Lite']]);
+    const [details] = catalog.exec('SELECT id, description, project_url FROM games WHERE description IS NOT NULL OR project_url IS NOT NULL');
+    assert.equal(details.values.length, 1);
+    assert.equal(details.values[0][0], 'national-dex');
+    assert.match(details.values[0][1], /386 Pokémon/);
+    assert.equal(details.values[0][2], 'https://www.romhacking.net/hacks/1991/');
     for (const [english, thai] of notes.values) {
       assert.match(english, /[A-Za-z]/);
       assert.match(thai, /\p{Script=Thai}/u);
