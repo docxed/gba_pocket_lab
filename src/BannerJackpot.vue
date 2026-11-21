@@ -60,7 +60,7 @@ const particles = Array.from({ length: waves * particlesPerWave }, (_, id) => {
 
 <style scoped>
 .banner-jackpot {
-  --loop-duration: 5.6s;
+  --loop-duration: 3.6s;
   position: absolute;
   inset: 0;
   container-type: inline-size;
