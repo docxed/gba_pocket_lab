@@ -7,6 +7,7 @@ import { gbaText } from '../src/lib/emerald-cheat.js';
 import { soulGoldPatch } from '../src/lib/soulgold.js';
 import { crestPatch } from '../src/lib/crest.js';
 import { wallyQuestPatch } from '../src/lib/wally-quest.js';
+import { nationalDexPatch } from '../src/lib/national-dex.js';
 import { g3ePatch } from '../src/lib/g3e.js';
 import { thetaEmeraldPatch } from '../src/lib/theta-emerald.js';
 import { shortcutHashes, startHashes } from '../src/lib/unbound.js';
@@ -19,6 +20,7 @@ const buildHashes = new Map([
   [crestPatch.source, 'emerald-crest'],
   [wallyQuestPatch.source, 'wally-quest'],
   [thetaEmeraldPatch.source, 'theta-emerald'],
+  ...nationalDexPatch.builds.map(({ source, name }) => [source, `national-dex (${name})`]),
   [g3ePatch.source, 'generation-3-evolved v1.0.26'],
   ...Object.keys(shortcutHashes).map(hash => [hash, 'unbound']),
   ...Object.keys(startHashes).map(hash => [hash, 'unbound (R-button patch)'])

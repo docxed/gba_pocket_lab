@@ -22,7 +22,8 @@ INSERT INTO games VALUES
   ('wally-quest', 'Pokémon Wally Quest', 'covers/wally-quest.png', 'Start > MAX CHEATS', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 4),
   ('unbound', 'Pokémon Unbound', 'covers/unbound.webp', 'Start > Cheat', 'Cheat is the rightmost icon in Start.', 'Cheat คือไอคอนขวาสุดของเมนู Start', 5),
   ('theta-emerald', 'Pokémon Theta Emerald: The Last Dance', 'covers/theta-emerald.webp', 'Start > Cheat', 'Sets money to 9,999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 9,999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 6),
-  ('generation-3-evolved', 'Pokémon Generation 3 Evolved', 'covers/generation-3-evolved.png', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 7);
+  ('generation-3-evolved', 'Pokémon Generation 3 Evolved', 'covers/generation-3-evolved.png', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 7),
+  ('national-dex', 'Pokémon Emerald: Complete National Dex Edition', 'covers/national-dex.png', 'Start > Cheat', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 8);
 INSERT INTO builds VALUES
   ('soulgold', 1, 'English 1.2.1'),
   ('soulgold', 2, 'TH Nonplae 1.2'),
@@ -32,4 +33,6 @@ INSERT INTO builds VALUES
   ('unbound', 1, 'English v2.1.1.1'),
   ('unbound', 2, 'TH Nonplae 2.0'),
   ('theta-emerald', 1, 'The Last Dance (Completo)'),
-  ('generation-3-evolved', 1, 'v1.0.26');
+  ('generation-3-evolved', 1, 'v1.0.26'),
+  ('national-dex', 1, 'Standard'),
+  ('national-dex', 2, 'Lite');

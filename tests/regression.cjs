@@ -103,7 +103,9 @@ async function main() {
   try {
     catalog.run(fs.readFileSync(__dirname + '/../src/data/catalog.sql', 'utf8'));
     const [notes] = catalog.exec('SELECT patch_note, patch_note_th FROM games ORDER BY sort_order');
-    assert.equal(notes.values.length, 7);
+    assert.equal(notes.values.length, 8);
+    const [nationalDex] = catalog.exec("SELECT g.menu_hint, b.name FROM games g JOIN builds b ON g.id = b.game_id WHERE g.id = 'national-dex' ORDER BY b.sort_order");
+    assert.deepEqual(nationalDex.values, [['Start > Cheat', 'Standard'], ['Start > Cheat', 'Lite']]);
     for (const [english, thai] of notes.values) {
       assert.match(english, /[A-Za-z]/);
       assert.match(thai, /\p{Script=Thai}/u);
@@ -230,6 +232,12 @@ async function main() {
   const unsupportedEmerald = new Uint8Array(32 * 1024 * 1024);
   unsupportedEmerald.set(emeraldHeaderOnly);
   await assert.rejects(patchThetaEmerald(unsupportedEmerald), /unpatched Pok.*Theta Emerald/);
+  const {patchNationalDex, nationalDexPatch} = await import('../src/lib/national-dex.js');
+  await assert.rejects(patchNationalDex(unsupportedEmerald.subarray(0, nationalDexPatch.sourceSize)), /unpatched Pok.*Complete National Dex Edition/);
+  const nationalDexFixtures = new Map([
+    ['8a80807472ab4bc95f1e9e577873866849971cbe3d64b1d86475205b5be29836', '19c41f795d2f8bbc17c5e9b2792107ee07838bfae005e750cdb28e144ccbe7dd'],
+    ['6c306f7e4de72f09006da2a76b08e66b8438d3cdcab8b06b9ec9280350821d50', 'ffa2b363185260f38973fabefe2f5f808516cc8d63971bc91b9308a681319ab2']
+  ]);
   const otherFireRed = new Uint8Array(32 * 1024 * 1024);
   otherFireRed.set(Buffer.from('POKEMON FIREBPRE01\x96', 'latin1'), 0xa0);
   otherFireRed[0xbd] = 0x68;
@@ -252,6 +260,20 @@ async function main() {
     const input = Uint8Array.from(fs.readFileSync(file));
     const hash = bytes => createHash('sha256').update(bytes).digest('hex');
     const before = hash(input);
+    if (nationalDexFixtures.has(before)) {
+      const {output, verified, filename} = await patchNationalDex(input);
+      const suffix = before.startsWith('6c306f') ? ' Lite' : '';
+      assert.equal(filename, `Pokemon Emerald Complete National Dex Edition${suffix}-Cheat.gba`);
+      assert.equal(verified, true);
+      assert.equal(hash(output), nationalDexFixtures.get(before));
+      assert.equal(hash(input), before, 'The source ROM must remain unchanged');
+      assert.equal(output.length, input.length);
+      const padded = await readGbaRom(new Blob([input, Uint8Array.of(0xff)]), nationalDexPatch.sourceSize);
+      assert.equal(hash((await patchNationalDex(padded)).output), hash(output));
+      await assert.rejects(patchNationalDex(output), /unpatched Pok.*Complete National Dex Edition/);
+      console.log('Applied the Complete National Dex Edition Start > Cheat patch for ' + file);
+      continue;
+    }
     if (before === g3ePatch.source) {
       const {output, verified} = await patchG3e(input);
       assert.equal(verified, true);
