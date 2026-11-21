@@ -33,7 +33,7 @@ Start local ROM investigations with `node tools/inspect-rom.mjs "<local ROM path
 
 - Use Node.js 20.19+ in the 20.x line or 22.12+. Run `npm ci` and `npm run dev` for local development.
 - Run `npm test` and `npm run build`, then `npm run preview` to check the static build. Pass supported local ROM paths to `node tests/regression.cjs` to verify output hashes.
-- Set GitHub Pages source to **GitHub Actions**. The workflow builds and publishes `dist/` when `main` receives a push or the workflow runs manually.
+- Set GitHub Pages source to **GitHub Actions**. The workflow builds and publishes `dist/` when `main` receives a push or the workflow runs manually. After upload, it waits for the Pages artifact ID to appear in the current run before deploying.
 
 ## Radical Red 4.1 investigation
 
