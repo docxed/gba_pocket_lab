@@ -331,7 +331,11 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.48</span>
+      <div :lang="language">
+        <a class="footer-support-link" href="https://easydonate.app/docxed" rel="noreferrer">{{ copy.supportProject }}</a>
+        <p>{{ copy.supportFeedback }}</p>
+      </div>
+      <span>v0.49</span>
     </footer>
   </v-app>
 </template>

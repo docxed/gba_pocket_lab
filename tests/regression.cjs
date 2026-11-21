@@ -107,6 +107,10 @@ async function main() {
   assert.equal(patcherCopy.en.language, 'Page language');
   assert.equal(patcherCopy.en.projectPage, 'Project page');
   assert.equal(patcherCopy.th.projectPage, 'หน้าโครงการ');
+  assert.equal(patcherCopy.en.supportProject, 'Support this project');
+  assert.equal(patcherCopy.en.supportFeedback, 'You can include feedback with your donation.');
+  assert.equal(patcherCopy.th.supportProject, 'สนับสนุนโครงการนี้');
+  assert.equal(patcherCopy.th.supportFeedback, 'คุณสามารถฝากความคิดเห็นพร้อมการสนับสนุนได้');
   const {default: initSqlJs} = await import('sql.js');
   const catalog = new (await initSqlJs()).Database();
   try {
@@ -143,6 +147,8 @@ async function main() {
   const patcherView = fs.readFileSync(__dirname + '/../src/App.vue', 'utf8');
   assert.match(patcherView, /<\/ul>\s*<p v-if="game" id="rom-build-hint"[^>]*>{{ copy\.romHint }}<\/p>/);
   assert.match(patcherView, /:aria-describedby="game \? 'rom-build-hint' : undefined"/);
+  const footer = patcherView.match(/<footer\b[^>]*>([\s\S]*?)<\/footer>/)?.[1] ?? '';
+  assert.match(footer, /<div :lang="language">\s*<a\b[^>]*href="https:\/\/easydonate\.app\/docxed"[^>]*>{{ copy\.supportProject }}<\/a>\s*<p>{{ copy\.supportFeedback }}<\/p>/);
   const deployWorkflow = fs.readFileSync(__dirname + '/../.github/workflows/deploy.yml', 'utf8');
   assert.doesNotMatch(patcherView + deployWorkflow, /VITE_(?:VISIT_COUNTER_URL|GOATCOUNTER_SITE)|showVisits/);
   const selector = patcherView.match(/<v-autocomplete\s+id="game-select"[^>]*>/)?.[0];

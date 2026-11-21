@@ -1,4 +1,4 @@
-# Poké Lab v0.48
+# Poké Lab v0.49
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 
@@ -23,3 +23,8 @@ The Pokémon Emerald: Complete National Dex Edition catalog entry includes a sho
 In Pokémon Emerald: Complete National Dex Edition (Standard or Lite), **Start > Cheat** sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room. Both builds pass static checks. The user confirmed that Start > Cheat works in an emulator.
 
 For local ROM analysis, run `node tools/inspect-rom.mjs "<local ROM path>"` and follow the [new ROM workflow](AGENTS.md#new-rom-workflow).
+
+## Support
+
+Use [Support this project](https://easydonate.app/docxed) in the app footer to donate and include feedback with your donation.
+The link label and its description follow the Patcher language setting.
