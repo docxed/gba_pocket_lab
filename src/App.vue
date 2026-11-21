@@ -11,6 +11,7 @@ import { loadCatalog } from './lib/catalog.js';
 import { patchSoulGold } from './lib/soulgold.js';
 import { readGbaRom } from './lib/rom-file.js';
 import ItemRain from './ItemRain.vue';
+import BannerJackpot from './BannerJackpot.vue';
 import JackpotLogo from './JackpotLogo.vue';
 import { applyTheme, savedTheme, saveTheme } from './lib/theme.js';
 import { patcherCopy, patcherLanguage, savePatcherLanguage } from './lib/patcher-language.js';
@@ -222,6 +223,7 @@ async function download() {
       <section v-show="page === 'patch'" aria-labelledby="patch-heading">
         <div class="patch-hero">
           <img class="patch-banner" :src="patcherBanner" alt="" width="1024" height="338">
+          <BannerJackpot v-if="page === 'patch'" />
           <div class="patch-hero-copy">
             <h1 id="patch-heading" class="page-heading">ROM Patcher</h1>
             <p v-if="game?.id === 'wally-quest'" class="patch-intro"><strong>Max Cheats</strong> fills your wallet and tops up Rare Candies and Master Balls.</p>
@@ -329,7 +331,7 @@ async function download() {
         <p>ROMs, RAM dumps, and pasted debugger logs stay in your browser. The patcher downloads a separate ROM and leaves your original file and saves untouched.</p>
         <p>Shared links contain the selected game ID. Misc loads libraries from jsDelivr and requests icons from GitHub by item name. You can turn off online item icons in Misc.</p>
       </details>
-      <span>v0.46</span>
+      <span>v0.47</span>
     </footer>
   </v-app>
 </template>

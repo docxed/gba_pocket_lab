@@ -1,4 +1,4 @@
-# Poké Lab v0.46
+# Poké Lab v0.47
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 
@@ -6,6 +6,7 @@ In Patcher, type a game name or build version into the Game selector to narrow t
 Use a `.gba` file already patched to one of the ROM hack versions shown under the selector.
 The patcher checks the file contents and accepts ROM dumps with uniform padding after the cartridge data.
 The looping 8-bit-style header logo features a Master Ball, Rare Candy, and gold coins. Reduced motion keeps it still.
+The Lance banner keeps the original artwork in place while six waves of item sprites and aura effects loop around it.
 Use the theme button in the header to switch between light and dark mode.
 Use the page language flags in Patcher to switch the main controls, cheat notes, and feedback between English and Thai.
 
