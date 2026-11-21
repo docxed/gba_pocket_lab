@@ -1,4 +1,4 @@
-# Poké Lab v0.47
+# Poké Lab v0.48
 
 Poké Lab is a browser-based tool for enabling in-game cheat menus in supported GBA Pokémon ROM hacks. It also includes tools for money cheats, shop cheats, and item lookup.
 
@@ -18,7 +18,7 @@ In Pokémon Theta Emerald: The Last Dance, choose **Start > Cheat** to fill your
 
 In Pokémon Generation 3 Evolved v1.0.26, the patcher adds **Start > Cheat** after the player card and opens the game's Debug menu. The user confirmed that Start > Cheat opens successfully in an emulator.
 
-The Pokémon Emerald: Complete National Dex Edition catalog entry includes a short game description and a link to its project page.
+The Pokémon Emerald: Complete National Dex Edition catalog entry includes a short game description and a project-page link in English and Thai.
 
 In Pokémon Emerald: Complete National Dex Edition (Standard or Lite), **Start > Cheat** sets money to 999,999 and tops up Rare Candies and Master Balls to 99 each when the bag has room. Both builds pass static checks. The user confirmed that Start > Cheat works in an emulator.
 

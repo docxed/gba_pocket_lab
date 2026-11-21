@@ -1,10 +1,10 @@
-# Project context — Poké Lab v0.47
+# Project context — Poké Lab v0.48
 
 The static app uses Vue, Vite, Vuetify, and Tailwind. Patcher and Misc share Noto Sans Thai Looped as the first choice for UI text, with system fallbacks for missing glyphs. Project communication uses Thai, and source documentation is in English.
 
 ## Current architecture
 
-- The root Vite entry renders the ROM Patcher. The local SQL catalog provides game and build labels, cover images, menu paths, and per-game patch notes through SQLite (sql.js). The Complete National Dex Edition entry also shows a description and project link below the game selector.
+- The root Vite entry renders the ROM Patcher. The local SQL catalog provides game and build labels, cover images, menu paths, and per-game patch notes through SQLite (sql.js). The Complete National Dex Edition entry also shows a localized description and project link below the game selector.
 - The header logo animates a CSS Master Ball, Rare Candy sprites, gold coins, and a purple burst in a continuous 8-bit-style loop. Reduced motion displays a static arrangement. The favicon uses a static Lance portrait.
 - The Patcher hero layers six waves of Master Balls, Rare Candies, and gold coins over the original Lance artwork on a 5.6-second loop. A mask keeps the center clear and reduced motion hides the overlay.
 - A decorative shower of Rare Candy, Master Ball, and Relic Gold sprites plays over the interactive page for 1.8 seconds on each page load. The sprites are bundled locally, and the animation is skipped when reduced motion is enabled.

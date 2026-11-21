@@ -7,6 +7,7 @@ CREATE TABLE games (
   patch_note_th TEXT NOT NULL,
   sort_order INTEGER NOT NULL,
   description TEXT,
+  description_th TEXT,
   project_url TEXT
 );
 
@@ -28,6 +29,7 @@ INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_o
   ('national-dex', 'Pokémon Emerald: Complete National Dex Edition', 'covers/national-dex.png', 'Start > Cheat', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 8);
 UPDATE games
 SET description = 'An Emerald ROM hack that makes all 386 Pokémon obtainable and keeps the difficulty close to the original.',
+    description_th = 'ROM แฮ็กของ Pokémon Emerald ที่ให้คุณหาโปเกมอนได้ครบทั้ง 386 ตัว โดยมีความยากใกล้เคียงกับเกมต้นฉบับ',
     project_url = 'https://www.romhacking.net/hacks/1991/'
 WHERE id = 'national-dex';
 
