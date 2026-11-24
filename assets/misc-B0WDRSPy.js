@@ -1,0 +1,1 @@
+import{r as e,t}from"./theme-DuHB4JQU.js";t(document.documentElement,e()??(matchMedia(`(prefers-color-scheme: dark)`).matches?`dark`:`light`));
