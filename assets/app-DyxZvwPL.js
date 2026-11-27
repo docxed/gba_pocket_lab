@@ -36,7 +36,7 @@ CREATE TABLE builds (
 );
 
 INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_order) VALUES
-  ('omega-ruby-origins', 'Pokémon Omega Ruby Origins', '', 'Start > Cheat', 'Sets money to 999,999 and tops up these items to 99 each when there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, and Leftovers.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max และ Leftovers', 17),
+  ('omega-ruby-origins', 'Pokémon Omega Ruby Origins', 'covers/omega-ruby-origins.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up these items to 99 each when there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, and Leftovers.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max และ Leftovers', 17),
   ('modern-emerald', 'Pokémon Modern Emerald', 'covers/modern-emerald.webp', 'Start > Cheat', 'Choose Cheat above Exit to open the game’s Debug menu.', 'เลือก Cheat เหนือ Exit เพื่อเปิดเมนู Debug ของเกม', 16),
   ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 1),
   ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 2),
@@ -52,6 +52,12 @@ INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_o
   ('heart-and-soul', 'Pokémon Heart and Soul', 'covers/heart-and-soul.webp', 'Start > Cheat', 'Opens the game’s Debug menu.', 'เปิดเมนู Debug ของเกม', 12),
   ('rowe', 'Pokémon R.O.W.E.', 'covers/rowe.webp', 'Start > Cheat', 'Scroll past Exit to find Cheat and open the game’s Debug menu.', 'เลื่อนผ่าน Exit แล้วเลือก Cheat เพื่อเปิดเมนู Debug ของเกม', 14),
   ('sword-shield-ultimate-plus', 'Pokémon Sword and Shield Ultimate Plus', 'covers/sword-shield-ultimate-plus.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up each item to 99 if there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, and Life Orb.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash และ Life Orb', 15);
+
+UPDATE games
+SET description = 'A Pokémon Ruby ROM hack by Player Brendan that revisits Hoenn with an expanded Pokémon roster, Mega Evolutions, and tougher trainer battles.',
+    description_th = 'ROM แฮ็ก Pokémon Ruby โดย Player Brendan ที่พากลับไปผจญภัยในโฮเอนน์ พร้อมโปเกมอนให้จับเพิ่มขึ้น ระบบ Mega Evolution และการต่อสู้กับเทรนเนอร์ที่ท้าทายขึ้น',
+    project_url = 'https://fabbio-studios.github.io/OmegarubyKO_docs/'
+WHERE id = 'omega-ruby-origins';
 
 UPDATE games
 SET description = 'An Emerald ROM hack by resetes12 with optional following Pokémon, double-speed battles, and an updated Battle Frontier. Choose a Classic or Modern preset, or customize difficulty, randomizer settings, and Nuzlocke rules.',
