@@ -36,7 +36,7 @@ CREATE TABLE builds (\r
 );\r
 \r
 INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_order) VALUES\r
-  ('modern-emerald', 'Pokémon Modern Emerald', '', 'Start > Cheat', 'Choose Cheat above Exit to open the game’s Debug menu.', 'เลือก Cheat เหนือ Exit เพื่อเปิดเมนู Debug ของเกม', 16),
+  ('modern-emerald', 'Pokémon Modern Emerald', 'covers/modern-emerald.webp', 'Start > Cheat', 'Choose Cheat above Exit to open the game’s Debug menu.', 'เลือก Cheat เหนือ Exit เพื่อเปิดเมนู Debug ของเกม', 16),
   ('soulgold', 'Pokémon SoulGold', 'covers/soulgold.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 1),\r
   ('soulgold-mega-xtream', 'Pokémon SoulGold MegaXtream', 'covers/soulgold-mega-xtream.webp', 'Start > Cheat', 'Opens the Debug menu.', 'เปิดเมนู Debug', 2),\r
   ('emerald-crest', 'Pokémon Emerald Crest', 'covers/emerald-crest.png', 'Start > Right > CHEAT', 'Press Right in Start to find CHEAT.', 'กดขวาในเมนู Start เพื่อไปที่ CHEAT', 3),\r
@@ -51,6 +51,12 @@ INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_o
   ('heart-and-soul', 'Pokémon Heart and Soul', 'covers/heart-and-soul.webp', 'Start > Cheat', 'Opens the game’s Debug menu.', 'เปิดเมนู Debug ของเกม', 12),\r
   ('rowe', 'Pokémon R.O.W.E.', 'covers/rowe.webp', 'Start > Cheat', 'Scroll past Exit to find Cheat and open the game’s Debug menu.', 'เลื่อนผ่าน Exit แล้วเลือก Cheat เพื่อเปิดเมนู Debug ของเกม', 14),\r
   ('sword-shield-ultimate-plus', 'Pokémon Sword and Shield Ultimate Plus', 'covers/sword-shield-ultimate-plus.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up each item to 99 if there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, and Life Orb.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash และ Life Orb', 15);\r
+\r
+UPDATE games\r
+SET description = 'An Emerald ROM hack by resetes12 with optional following Pokémon, double-speed battles, and an updated Battle Frontier. Choose a Classic or Modern preset, or customize difficulty, randomizer settings, and Nuzlocke rules.',\r
+    description_th = 'ROM แฮ็ก Pokémon Emerald โดย resetes12 ที่เลือกให้โปเกมอนเดินตามได้ เร่งการต่อสู้เป็นสองเท่า และปรับปรุง Battle Frontier เลือกเล่นแบบ Classic หรือ Modern หรือปรับความยาก ตัวเลือก Randomizer และกติกา Nuzlocke เองได้',\r
+    project_url = 'https://www.pokecommunity.com/threads/pok%C3%A9mon-modern-emerald-3-6-open-source-double-speed-battles-following-pok%C3%A9mon-better-battle-frontier-and-more.494005/'\r
+WHERE id = 'modern-emerald';\r
 \r
 UPDATE games\r
 SET description = 'An Emerald ROM hack by Team Monomyth set in the Athanto region.',\r
