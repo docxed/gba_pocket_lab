@@ -37,7 +37,7 @@ CREATE TABLE builds (\r
 );\r
 \r
 INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_order) VALUES\r
-  ('seaglass', 'Pokémon Emerald Seaglass', '', 'Start > Cheat', 'Sets money to 999,999 and tops up each item to 99 if there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack, and X Sp. Atk.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack และ X Sp. Atk', 19),\r
+  ('seaglass', 'Pokémon Emerald Seaglass', 'covers/seaglass.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up each item to 99 if there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack, and X Sp. Atk.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack และ X Sp. Atk', 19),\r
   ('lazarus', 'Pokémon Lazarus', 'covers/lazarus.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up each item to 99 if there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack, and X Sp. Atk.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, Leftovers, Focus Sash, Life Orb, X Attack และ X Sp. Atk', 18),\r
   ('omega-ruby-origins', 'Pokémon Omega Ruby Origins', 'covers/omega-ruby-origins.webp', 'Start > Cheat', 'Sets money to 999,999 and tops up these items to 99 each when there is room: Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max, and Leftovers.', 'เติมเงินเป็น 999,999 และเติมไอเทมให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ ได้แก่ Rare Candy, Master Ball, Full Restore, Max Revive, Max Potion, Max Elixir, Sacred Ash, HP Up, Protein, Iron, Carbos, Calcium, Zinc, PP Max และ Leftovers', 17),\r
   ('modern-emerald', 'Pokémon Modern Emerald', 'covers/modern-emerald.webp', 'Start > Cheat', 'Choose Cheat above Exit to open the game’s Debug menu.', 'เลือก Cheat เหนือ Exit เพื่อเปิดเมนู Debug ของเกม', 16),\r
@@ -130,8 +130,9 @@ INSERT INTO games (id, name, cover, menu_hint, patch_note, patch_note_th, sort_o
   ('origin-heart-gold', 'Pokémon Origin Heart Gold', 'covers/origin-heart-gold.webp', 'Hold L and tap SELECT while walking', 'Sets money to 999,999 and tops up Rare Candy and Master Ball to 99 each if there is room.', 'เติมเงินเป็น 999,999 และเติม Rare Candy กับ Master Ball ให้ครบอย่างละ 99 เมื่อกระเป๋ามีที่พอ', 10, 'NDS', 'กด L ค้างแล้วแตะ SELECT ตอนเดินในฉาก');\r
 \r
 UPDATE games\r
-SET description = 'An Emerald ROM hack for Game Boy Advance. Poké Lab supports the English v3.0 build.',\r
-    description_th = 'รอมแฮ็กของ Pokémon Emerald บน Game Boy Advance โดย Poké Lab รองรับไฟล์ v3.0 ภาษาอังกฤษ'\r
+SET description = 'Nemo622 reimagines Hoenn with Game Boy Color-inspired art, Pokémon that follow the player, a wishing well, and a pinball minigame.',\r
+    description_th = 'ROM แฮ็กโดย Nemo622 ที่ปรับโฉมภูมิภาค Hoenn ด้วยภาพสไตล์ Game Boy Color ให้โปเกมอนเดินตามผู้เล่น และเพิ่มกิจกรรมอย่างบ่อน้ำอธิษฐานกับมินิเกมพินบอล',\r
+    project_url = 'https://ko-fi.com/nemo622'\r
 WHERE id = 'seaglass';\r
 \r
 INSERT INTO builds (game_id, sort_order, name) VALUES\r
